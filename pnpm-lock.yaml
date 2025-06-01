@@ -71,6 +71,12 @@ importers:
         specifier: 5.8.2
         version: 5.8.2
 
+  packages/backend-common:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
   packages/db:
     dependencies:
       '@prisma/client':
