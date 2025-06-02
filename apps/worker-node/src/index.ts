@@ -10,14 +10,7 @@ async function poller(url:string,id:string){
     const website_id=response.data.website_id
     const region=response.data.region
     let status_n:"Up" | "Down" | "Unknown"
- if(status==200){
-    status_n=   "Up"
-    
- }else if(status==500){
-    status_n="Down"
- }else {
-    status_n="Unknown"
- }
+status_n=status==200?"Up":status==500?"Down":"Unknown"
     const websiteTick=await prismaClient.websiteTick.create({
         data:{
             id:id,
@@ -30,10 +23,8 @@ async function poller(url:string,id:string){
     })
     return true
 }
-async function taskFinsher(){
-    while(true){
+async function start_task(){
         consumeFromQueue("task_Q",poller)
-    }
 
 }
-taskFinsher()
+start_task()

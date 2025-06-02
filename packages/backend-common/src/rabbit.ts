@@ -10,12 +10,10 @@ async function connectToRabbit() {
         throw e
     }
 }
-
 interface Task {
     id: string;
     url: string;
   }
-  
 export async function pushManyToQueue(queue_name: string, items:Task[]) {
     const { channel, connection } = await connectToRabbit();
     await channel.assertQueue(queue_name, { durable: true });
@@ -28,7 +26,6 @@ export async function pushManyToQueue(queue_name: string, items:Task[]) {
             console.log("Failed to enqueue:", item);
         }
     }
-
     await channel.close();
     await connection.close();
 }
@@ -36,7 +33,7 @@ export async function pushManyToQueue(queue_name: string, items:Task[]) {
 export async function consumeFromQueue(queue_name: string, poller: (url: string,id:string) => Promise<boolean>) {
     const { channel, connection } = await connectToRabbit();
     await channel.assertQueue(queue_name, { durable: true });
-    channel.prefetch(10); 
+    channel.prefetch(100); 
     channel.consume(queue_name, async (msg) => {
         if (msg) {
             const task=JSON.parse(msg.content.toString())
@@ -46,11 +43,11 @@ export async function consumeFromQueue(queue_name: string, poller: (url: string,
                     channel.ack(msg);
                     console.log("Processed and acked:", task);
                 } else {
-                    channel.nack(msg, false, true); 
+                    channel.nack(msg, false, false); 
                     console.log(" Processing failed:", task);
                 }
             } catch (e) {
-                channel.nack(msg, false, true);
+                channel.nack(msg, false, false);
                 console.log(" Error processing message:", e);
             }
         }

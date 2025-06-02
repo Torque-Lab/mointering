@@ -38,7 +38,7 @@ app.get("/status", async (req, res) => {
 });
 
 async function taskScheduler() {
-  setInterval(async () => {
+  async function run() {
     try {
       const response = await prismaClient.website.findMany({
         select: { id: true, url: true },
@@ -46,16 +46,21 @@ async function taskScheduler() {
 
       if (response.length > 0) {
         await pushManyToQueue("task_Q", response);
-        console.log(` Pushed ${response.length} tasks to queue.`);
+        console.log(`Pushed ${response.length} tasks to queue.`);
       } else {
-        console.log(" No tasks found.");
+        console.log("No tasks found.");
       }
     } catch (e) {
-      console.error(" Error in taskScheduler:", e);
+      console.error("Error in taskScheduler:", e);
+    } finally {
+      setTimeout(run, 3000);
     }
-  }, 3000);
+  }
+
+  run(); 
 }
 
- taskScheduler()
+taskScheduler();
+
 
 app.listen(process.env.PORT || 3001);
