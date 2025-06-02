@@ -1,19 +1,17 @@
 {
-  "name": "@repo/backend-common",
+  "name": "worker-node",
   "version": "1.0.0",
   "main": "index.js",
-  "exports": {
-    "./rabbit": "./src/rabbit.ts"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "amqplib": "^0.10.8"
+    "@repo/backend-common": "workspace:*",
+    "@repo/db": "workspace:*",
+    "axios": "^1.9.0"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@types/amqplib": "^0.10.7"
+    "@repo/typescript-config": "workspace:*"
   },
   "author": "",
   "license": "ISC",

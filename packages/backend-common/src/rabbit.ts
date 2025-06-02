@@ -11,11 +11,16 @@ async function connectToRabbit() {
     }
 }
 
-export async function pushManyToQueue(queue_name: string, items: JSON[]) {
+interface Task {
+    id: string;
+    url: string;
+  }
+  
+export async function pushManyToQueue(queue_name: string, items:Task[]) {
     const { channel, connection } = await connectToRabbit();
     await channel.assertQueue(queue_name, { durable: true });
-
-    for (const item of items) {
+    for (let i=0;i<items.length;i++) {
+        const item=items[i]
         const success = channel.sendToQueue(queue_name, Buffer.from(JSON.stringify(item)), {
             persistent: true,
         });
@@ -28,21 +33,21 @@ export async function pushManyToQueue(queue_name: string, items: JSON[]) {
     await connection.close();
 }
 
-export async function consumeFromQueue(queue_name: string, poller: (item: string) => Promise<boolean>) {
+export async function consumeFromQueue(queue_name: string, poller: (url: string,id:string) => Promise<boolean>) {
     const { channel, connection } = await connectToRabbit();
     await channel.assertQueue(queue_name, { durable: true });
     channel.prefetch(10); 
     channel.consume(queue_name, async (msg) => {
         if (msg) {
-            const content = msg.content.toString();
+            const task=JSON.parse(msg.content.toString())
             try {
-                const success = await poller(content);
+                const success = await poller(task.url,task.id);
                 if (success) {
                     channel.ack(msg);
-                    console.log("Processed and acked:", content);
+                    console.log("Processed and acked:", task);
                 } else {
                     channel.nack(msg, false, true); 
-                    console.log(" Processing failed:", content);
+                    console.log(" Processing failed:", task);
                 }
             } catch (e) {
                 channel.nack(msg, false, true);
