@@ -13,12 +13,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model User{
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  username String @unique 
+  password String
+  websites Website[]
+}
 
 model Website {
   id        String        @id @default(uuid())
   url       String
   createdAt DateTime      @default(now())
   ticks     WebsiteTick[]
+  user_id   String
+  user      User          @relation(fields: [user_id], references: [id])
 }
 
 model Region {
@@ -35,6 +45,7 @@ model WebsiteTick {
   website_id       String
   region           Region        @relation(fields: [region_id], references: [id])
   website          Website       @relation(fields: [website_id], references: [id])
+  createdAt        DateTime      @default(now())
 }
 
 enum WebsiteStatus {
