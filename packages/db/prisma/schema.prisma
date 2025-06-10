@@ -38,14 +38,18 @@ model Region {
 }
 
 model WebsiteTick {
-  id               String        @id @default(uuid())
+  id               String        @default(uuid())
   response_time_ms Int
   status           WebsiteStatus
   region_id        String
   website_id       String
   region           Region        @relation(fields: [region_id], references: [id])
   website          Website       @relation(fields: [website_id], references: [id])
-  createdAt        DateTime      @default(now())
+  createdAt        DateTime      @default(now()) @db.Timestamptz(6)
+  
+  @@id([id, createdAt])
+  @@index([createdAt])
+  @@map("website_tick")
 }
 
 enum WebsiteStatus {
