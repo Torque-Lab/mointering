@@ -17,6 +17,7 @@ app.post("/website", async (req, res) => {
     data: {
       url: req.body.url,
       createdAt: new Date(),
+      user_id: req.body.userId,
     },
   });
 

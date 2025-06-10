@@ -1,55 +1,105 @@
+import amqp, { ChannelModel, Channel} from "amqplib";
 
-import amqp from "amqplib";
-async function connectToRabbit() {
+// Singleton pattern for connection and channel
+let connection: ChannelModel | null = null;
+let channel: Channel | null = null;
+
+async function getRabbitMQChannel() {
+    if (channel && connection) {
+        return { channel, connection };
+    }
+
     try {
-        const connection = await amqp.connect("amqp://localhost:5672");
-        const channel = await connection.createChannel();
-        return {  channel,connection };
+        connection = await amqp.connect("amqp://localhost:5672");
+        
+       
+        connection.on("error", (err) => {
+            console.error("RabbitMQ connection error:", err);
+            channel = null;
+            connection = null;
+        });
+
+        connection.on("close", () => {
+            console.log("RabbitMQ connection closed");
+            channel = null;
+            connection = null;
+        });
+
+        channel = await connection.createChannel();
+        return { channel, connection };
     } catch (e) {
-        console.log("Error connecting Rabbit", e);
-        throw e
+        console.error("Error connecting to RabbitMQ:", e);
+        channel = null;
+        connection = null;
+        throw e;
     }
 }
+
 interface Task {
     id: string;
     url: string;
-  }
-export async function pushManyToQueue(queue_name: string, items:Task[]) {
-    const { channel, connection } = await connectToRabbit();
-    await channel.assertQueue(queue_name, { durable: true });
-    for (let i=0;i<items.length;i++) {
-        const item=items[i]
-        const success = channel.sendToQueue(queue_name, Buffer.from(JSON.stringify(item)), {
-            persistent: true,
-        });
-        if (!success) {
-            console.log("Failed to enqueue:", item);
-        }
-    }
-    await channel.close();
-    await connection.close();
 }
 
-export async function consumeFromQueue(queue_name: string, poller: (url: string,id:string) => Promise<boolean>) {
-    const { channel, connection } = await connectToRabbit();
-    await channel.assertQueue(queue_name, { durable: true });
-    channel.prefetch(100); 
-    channel.consume(queue_name, async (msg) => {
-        if (msg) {
-            const task=JSON.parse(msg.content.toString())
+export async function pushManyToQueue(queue_name: string, items: Task[]) {
+    try {
+        const { channel } = await getRabbitMQChannel();
+        await channel.assertQueue(queue_name, { durable: true });
+        
+        for (const item of items) {
+            const success = channel.sendToQueue(
+                queue_name, 
+                Buffer.from(JSON.stringify(item)), 
+                { persistent: true }
+            );
+            
+            if (!success) {
+                console.log("Failed to enqueue:", item);
+            }
+        }
+    } catch (e) {
+        console.error("Error in pushManyToQueue:", e);
+        throw e;
+    }
+}
+
+export async function consumeFromQueue(queue_name: string, poller: (url: string, id: string) => Promise<boolean>) {
+    try {
+        const { channel } = await getRabbitMQChannel();
+        await channel.assertQueue(queue_name, { durable: true });
+        channel.prefetch(100);
+        
+        channel.consume(queue_name, async (msg) => {
+            if (!msg) return;
+            
+            const task = JSON.parse(msg.content.toString());
             try {
-                const success = await poller(task.url,task.id);
+                const success = await poller(task.url, task.id);
                 if (success) {
                     channel.ack(msg);
                     console.log("Processed and acked:", task);
                 } else {
-                    channel.nack(msg, false, false); 
-                    console.log(" Processing failed:", task);
+                    channel.nack(msg, false, false);
+                    console.log("Processing failed:", task);
                 }
             } catch (e) {
                 channel.nack(msg, false, false);
-                console.log(" Error processing message:", e);
+                console.error("Error processing message:", e);
             }
-        }
-    }, { noAck: false });
+        }, { noAck: false });
+    } catch (e) {
+        console.error("Error in consumeFromQueue:", e);
+        throw e;
+    }
 }
+
+process.on('SIGINT', async () => {
+    if (channel) {
+        await channel.close();
+        channel = null;
+    }
+    if (connection) {
+        await connection.close();
+        connection = null;
+    }
+    process.exit(0);
+});
