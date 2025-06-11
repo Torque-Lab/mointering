@@ -1,11 +1,9 @@
 import { consumeFromQueue } from "@repo/backend-common/rabbit"
 import { prismaClient } from "@repo/db/prisma"
 import axios from "axios"
-import { WebsiteStatus } from "../../../packages/db/generated/prisma";
-
 const BATCH_SIZE = 100; 
 const BATCH_TIMEOUT_MS = 5000;
-const regionName = process.env.REGION_NAME;
+const regionName = process.env.REGION_NAME || "India";
 
 if (!regionName) {
     throw new Error('REGION_NAME is not set');
