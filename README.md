@@ -1,84 +1,98 @@
-# Turborepo starter
+# Mointering - Modern Website Monitoring Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A robust website monitoring platform built with modern technologies.This project helps you monitor your websites' uptime, performance, and health in real-time.
 
-## Using this example
+## 🏗️ Architecture
 
-Run the following command:
+The project is built as a monorepo using Turborepo, consisting of multiple services:
 
-```sh
-npx create-turbo@latest
+- **Frontend**: Next.js application for the user interface
+- **API**: Express.js backend service
+- **Worker**: Separate service for polling user sites
+- **Queue**: RabbitMQ for task management
+- **Database**: PostgreSQL with TimescaleDB extension
+- **ORM**: Prisma for database operations
+
+## 🚀 Features
+
+- Real-time website monitoring
+- Efficient database writes using batching
+- Distributed task processing
+- Scalable architecture
+- Modern and responsive UI
+
+## 🛠️ Tech Stack
+
+- **Monorepo Management**: Turborepo
+- **Frontend**: Next.js
+- **Backend**: Express.js
+- **Message Queue**: RabbitMQ
+- **Database**: PostgreSQL + TimescaleDB
+- **ORM**: Prisma
+- **Task Processing**: Custom worker service
+
+## 📦 Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL (v14 or higher)
+- RabbitMQ
+- Docker (optional, for containerized setup)
+
+## 🚀 Getting Started
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Torque-Lab/mointering.git
+cd mointering
 ```
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+2. Install dependencies:
+```bash
+pnpm install
 ```
 
-### Develop
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
+4. Start the development environment:
+```bash
 pnpm dev
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## 🏗️ Project Structure
 
 ```
-cd my-turborepo
-npx turbo login
+mointering/
+├── apps/
+│   ├── web as frontend/     # Next.js frontend application
+│   ├── http-backend/         # Express.js backend service
+│   └── worker-node/          # Polling worker service
+├── packages/
+│   ├── db/               # database configuration and schema
+│   └──backend-common/      # common backend logic 
+└── package.json
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🔧 Configuration
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Environment Variables
 
+Create a `.env` file in the  respective service root directory 
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/mointering"
+
+# RabbitMQ
+RABBITMQ_URL="amqp://localhost:5672"
+
+# API
+API_PORT=3001
+API_HOST=localhost
+
+# Frontend
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
-npx turbo link
-```
+`
 
-## Useful Links
 
-Learn more about the power of Turborepo:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+Project Link: [https://github.com/Torque-Lab/mointering]
