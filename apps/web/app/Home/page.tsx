@@ -1,7 +1,6 @@
-import { UptimeChart } from "@repo/ui";
-import type { UptimeData, Status } from "@repo/ui/UptimeChart";
+import { Button } from "../../components/Button";
+import UptimeChart, { Status, UptimeData } from "../../components/UptimeChart";
 
-import { Button } from "@repo/ui/Button";
 export default function Home() {
   const data: UptimeData[] = [
     { status: "Up" as Status, date: "2025-06-10", duration: "1440" },
