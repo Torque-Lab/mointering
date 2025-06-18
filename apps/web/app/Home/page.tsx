@@ -1,6 +1,7 @@
-import UptimeChart from "@repo/ui/UptimeChart";
+import { UptimeChart } from "@repo/ui";
 import type { UptimeData, Status } from "@repo/ui/UptimeChart";
 
+import { Button } from "@repo/ui/Button";
 export default function Home() {
   const data: UptimeData[] = [
     { status: "Up" as Status, date: "2025-06-10", duration: "1440" },
@@ -10,10 +11,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex">
-      <UptimeChart uptimeData={data} />
+    <>
+      <Button variant="primary" text={"add"} />
+      <div className="flex ">
+        <UptimeChart uptimeData={data} />
 
-      <div className="bg-red h-80 w-72 border-solid "> hi </div>
-    </div>
+        <div className="bg-red  border-solid h-5 w-30 border-amber-400  ">
+          {" "}
+          hi{" "}
+        </div>
+      </div>
+    </>
   );
 }
