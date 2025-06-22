@@ -3,31 +3,19 @@ import { ReactElement } from "react";
 interface SideBarItemProps {
   text?: string;
   icon: ReactElement;
-  menuTrue?: boolean;
   onClick?: () => void;
 }
-export function SideBarItem({
-  text,
-  icon,
-  menuTrue,
-  onClick,
-}: SideBarItemProps) {
+
+export function SideBarItem({ text, icon, onClick }: SideBarItemProps) {
   return (
-    <>
-      {menuTrue && (
-        <div
-          className="flex justify-end cursor-pointer w-full mb-2"
-          onClick={onClick}
-        >
-          {icon}
-        </div>
-      )}
-      {!menuTrue && (
-        <div className="flex gap-2 justify-center items-center">
-          {icon}
-          {text}
-        </div>
-      )}
-    </>
+    <div 
+      className="flex items-center py-3 px-4 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors mb-2"
+      onClick={onClick}
+    >
+      <div className="flex-shrink-0">
+        {icon}
+      </div>
+      {text && <span className="ml-3 whitespace-nowrap">{text}</span>}
+    </div>
   );
 }
