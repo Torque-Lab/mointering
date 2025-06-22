@@ -54,6 +54,46 @@ export default function Home() {
       responseTime: '180ms',
       lastCheck: '1 minute ago'
     },
+    {
+      id: 6,
+      name: 'Main Website',
+      status: 'Online' as const,
+      uptime: '100%',
+      responseTime: '250ms',
+      lastCheck: '2 minutes ago'
+    },
+    {
+      id: 7,
+      name: 'API Service',
+      status: 'Online' as const,
+      uptime: '99.98%',
+      responseTime: '180ms',
+      lastCheck: '1 minute ago'
+    },
+    {
+      id: 8,
+      name: 'API Service',
+      status: 'Online' as const,
+      uptime: '99.98%',
+      responseTime: '180ms',
+      lastCheck: '1 minute ago'
+    },
+    {
+      id: 9,
+      name: 'API Service',
+      status: 'Online' as const,
+      uptime: '99.98%',
+      responseTime: '180ms',
+      lastCheck: '1 minute ago'
+    },
+    {
+      id: 10,
+      name: 'API Service',
+      status: 'Offline' as const,
+      uptime: '99.98%',
+      responseTime: '180ms',
+      lastCheck: '1 minute ago'
+    },
     // Add more rows as needed
   ];
   const handleViewDetails = (id: string | number) => {
@@ -62,7 +102,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col  bg-[#3b4754] justify-end h-screen">
+    <div className="flex flex-col  bg-[#182636] justify-end h-screen w-full">
       <Sidebar/>
        <div className="flex justify-end mr-4 -ml-10 -mt-10">
       <Button variant="primary" startIcon={<PlusIcon />} text={"Add website"} />

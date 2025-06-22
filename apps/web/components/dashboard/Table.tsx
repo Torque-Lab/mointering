@@ -23,8 +23,7 @@ export function Table({ data, onViewDetails }: TableProps) {
   };
 
   return (
-    <div className=" flex align-center justify-center w-[60%] h-[57%] mt-6 ml-40 mb-12 overflow-hidden rounded-lg border border-[#3b4754] bg-[#1e293b]">
-     
+    <div className="flex align-center justify-center w-[60%] h-[57%] mt-6 ml-40 mb-12 overflow-y-auto scroll-smooth rounded-lg border border-[#3b4754] bg-[#1e293b] scrollbar-thin scrollbar-thumb-[#3b4754] scrollbar-track-[#1e293b] hover:scrollbar-thumb-[#4a5a6e]">
       <table className="w-full">
         <thead>
           <tr className="bg-[#1b2127]">
