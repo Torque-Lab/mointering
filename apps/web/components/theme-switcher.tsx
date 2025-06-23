@@ -16,7 +16,7 @@ export function ThemeSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-0.5 cursor-pointer">
       <button 
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         aria-label="Toggle theme"

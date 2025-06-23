@@ -4,6 +4,8 @@ import UptimeChart, { Status, UptimeData } from "../../components/UptimeChart";
 import { Table } from "../../components/dashboard/Table";
 import { PlusIcon } from "../../ui-icons/PlusIcons";
 import { Sidebar } from "../../components/SideBar";
+import { useState } from "react";
+import { ContentModel } from "../../components/ModelToAddWebsite";
 
 export default function Home() {
   const data: UptimeData[] = [
@@ -101,34 +103,43 @@ export default function Home() {
     // Handle view details action
   };
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <div className="flex flex-col  bg-[#182636] justify-end h-screen w-full">
-      <Sidebar/>
-       <div className="flex justify-end mr-4 -ml-10 -mt-10">
-      <Button variant="primary" startIcon={<PlusIcon />} text={"Add website"} />
-    </div>
-
-      <div className="justify-between items-center w-full h-[80%]">
-      <div className="flex flex-wrap justify-between gap-3 p-4 ml-44 -mt-10">
-              <div className="flex min-w-72 flex-col gap-3">
-                <p className="text-white tracking-light text-[32px] font-bold leading-tight">Overview</p>
-                <p className="text-[#9cabba] text-sm font-normal leading-normal">Monitor your services and websites</p>
-              </div>
+    <div className="flex min-h-screen bg-[#182636]">
+      <Sidebar />
+      
+      <div className="flex-1 ml-18 transition-all duration-300">
+        <div className="p-6" >
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-white text-3xl font-bold">Overview</h1>
+              <p className="text-[#9cabba] text-sm mt-1">Monitor your services and websites</p>
             </div>
-      <Table data={tableData} onViewDetails={handleViewDetails}/>
+            <Button 
+              variant="primary" 
+              startIcon={<PlusIcon />} 
+              text="Add Services" 
+              onClick={handleOpen} 
+              className="ml-auto"
+            />
+          </div>
+          
+          <div className="bg-[#1E293B] rounded-lg p-6">
+            <Table data={tableData} onViewDetails={handleViewDetails} />
+          </div>
+        </div>
       </div>
-   
-   
-
-  
-      {/* <div className="flex ">
-        <UptimeChart uptimeData={data} />
-
-        <div className="bg-red  border-solid h-5 w-30 border-amber-400  ">
-          {" "}
-          hi{" "}
-        </div> */}
-      {/* </div> */}
+      
+      <ContentModel open={open} onClose={handleClose} />
     </div>
   );
 }

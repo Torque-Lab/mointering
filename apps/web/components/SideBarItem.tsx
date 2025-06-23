@@ -1,21 +1,39 @@
 import { ReactElement } from "react";
 
-interface SideBarItemProps {
+interface SideBarItemProps extends React.HTMLAttributes<HTMLDivElement> {
   text?: string;
   icon: ReactElement;
+  isActive?: boolean;
+  className?: string;
   onClick?: () => void;
 }
 
-export function SideBarItem({ text, icon, onClick }: SideBarItemProps) {
+export function SideBarItem({ 
+  text, 
+  icon, 
+  isActive = false,
+  className = '',
+  onClick,
+  ...props 
+}: SideBarItemProps) {
   return (
-    <div 
-      className="flex items-center py-3 px-4 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors mb-2"
-      onClick={onClick}
-    >
-      <div className="flex-shrink-0">
-        {icon}
+    <li>
+      <div 
+        className={`flex items-center py-2.5 px-4 text-gray-600 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors ${
+          isActive ? 'bg-purple-50 text-purple-600' : 'hover:bg-gray-50'
+        } ${className}`}
+        onClick={onClick}
+        {...props}
+      >
+        <div className={`flex-shrink-0 ${isActive ? 'text-purple-600' : 'text-gray-500'}`}>
+          {icon}
+        </div>
+        {text && (
+          <span className="ml-3 text-sm font-medium whitespace-nowrap">
+            {text}
+          </span>
+        )}
       </div>
-      {text && <span className="ml-3 whitespace-nowrap">{text}</span>}
-    </div>
+    </li>
   );
 }

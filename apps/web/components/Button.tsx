@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant: "primary" | "secondary";
   text: string;
   startIcon?: ReactElement;
@@ -13,14 +13,15 @@ const variantClasses = {
 };
 
 const defultStyle =
-  "px-4 py-2 rounded-md font-light flex justify-end items-centor";
-export function Button({ variant, text, startIcon, onClick }: ButtonProps) {
+  "px-4 py-2 rounded-md font-light flex justify-end items-centor cursor-pointer";
+export function Button({ variant, text, startIcon, onClick, className = '', ...props }: ButtonProps) {
   return (
     <button
-      className={`${variantClasses[variant]} ${defultStyle}`}
+      className={`${variantClasses[variant]} ${defultStyle} ${className}`}
       onClick={onClick}
+      {...props}
     >
-      <div className="flex items-center pr-4 gap-x-2 ">
+      <div className="flex items-center pr-4 gap-x-2">
         {startIcon}
         {text}
       </div>
