@@ -17,6 +17,8 @@ model User{
   id String @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  name String?
+  image String?
   username String @unique 
   password String
   websites Website[]
@@ -25,6 +27,8 @@ model User{
 model Website {
   id        String        @id @default(uuid())
   url       String
+  serviceName String
+  email String
   createdAt DateTime      @default(now())
   ticks     WebsiteTick[]
   user_id   String

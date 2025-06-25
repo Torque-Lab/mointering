@@ -1,145 +1,116 @@
 "use client"
 import { Button } from "../../components/Button";
-import UptimeChart, { Status, UptimeData } from "../../components/UptimeChart";
-import { Table } from "../../components/dashboard/Table";
+import { Table, type TableRowData } from "../../components/dashboard/Table";
 import { PlusIcon } from "../../ui-icons/PlusIcons";
 import { Sidebar } from "../../components/SideBar";
-import { useState } from "react";
-import { ContentModel } from "../../components/ModelToAddWebsite";
+import { useState, useEffect } from "react";
+import ContentModel from "../../components/ModelToAddWebsite";
 
 export default function Home() {
-  const data: UptimeData[] = [
-    { status: "Up" as Status, date: "2025-06-10", duration: "1440" },
-    { status: "Down" as Status, date: "2025-06-11", duration: "10" },
-    { status: "Up" as Status, date: "2025-06-12", duration: "1430" },
-    // more objects...
-  ];
+  const [tableData, setTableData] = useState<TableRowData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const tableData = [
-    {
-      id: 1,
-      name: 'Main Website',
-      status: 'Online' as const,
-      uptime: '100%',
-      responseTime: '250ms',
-      lastCheck: '2 minutes ago'
-    },
-    {
-      id: 2,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 3,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 4,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 5,
-      name: 'API Service',
-      status: 'Offline' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 6,
-      name: 'Main Website',
-      status: 'Online' as const,
-      uptime: '100%',
-      responseTime: '250ms',
-      lastCheck: '2 minutes ago'
-    },
-    {
-      id: 7,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 8,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 9,
-      name: 'API Service',
-      status: 'Online' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    {
-      id: 10,
-      name: 'API Service',
-      status: 'Offline' as const,
-      uptime: '99.98%',
-      responseTime: '180ms',
-      lastCheck: '1 minute ago'
-    },
-    // Add more rows as needed
-  ];
-  const handleViewDetails = (id: string | number) => {
-    console.log('View details for:', id);
-    // Handle view details action
-  };
+  useEffect(() => {
+    const fetchWebsites = async () => {
+      try {
+        const response = await fetch('/api/websites', {
+          credentials: 'include',
+          next: { revalidate: 300} 
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch websites');
+        }
+        
+        const data = await response.json();
+        setTableData(data);
+      } catch (err) {
+        console.error('Error fetching websites:', err);
+        setError('Failed to load website data. Using sample data instead.');
+        // Fallback to sample data
+        setTableData([
+          {
+            id: 1,
+            name: 'Main Website',
+            status: 'Online',
+            uptime: '100%',
+            responseTime: '250ms',
+            lastCheck: '2 minutes ago',
+            url: 'https://example.com'
+          },
+          {
+            id: 2,
+            name: 'API Service',
+            status: 'Online',
+            uptime: '99.98%',
+            responseTime: '180ms',
+            lastCheck: '1 minute ago',
+            url: 'https://api.example.com'
+          },
+          {
+            id: 3,
+            name: 'Database',
+            status: 'Online',
+            uptime: '99.99%',
+            responseTime: '50ms',
+            lastCheck: '5 minutes ago',
+            url: 'https://db.example.com'
+          }
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const [open, setOpen] = useState(false);
+    fetchWebsites();
+  }, []);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const handleAddService = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <div className="flex min-h-screen bg-[#182636]">
-      <Sidebar />
-      
-      <div className="flex-1 ml-18 transition-all duration-300">
-        <div className="p-6" >
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-white text-3xl font-bold">Overview</h1>
-              <p className="text-[#9cabba] text-sm mt-1">Monitor your services and websites</p>
-            </div>
-            <Button 
-              variant="primary" 
-              startIcon={<PlusIcon />} 
-              text="Add Services" 
-              onClick={handleOpen} 
-              className="ml-auto"
-            />
-          </div>
-          
-          <div className="bg-[#1E293B] rounded-lg p-6">
-            <Table data={tableData} onViewDetails={handleViewDetails} />
-          </div>
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-[#182636]">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       </div>
-      
-      <ContentModel open={open} onClose={handleClose} />
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen bg-[#182636] min-w-fit">
+      <Sidebar />
+      <div className="flex-1 p-8 text-white">
+        <div className="flex justify-between items-center mb-8 ml-16">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+            <p className="text-gray-400">Monitor your services and websites</p>
+          </div>
+<Button 
+            variant="primary"
+            onClick={handleAddService}
+            className="whitespace-nowrap"
+          >
+            <PlusIcon  />
+            Add New Service
+          </Button>
+        </div>
+        
+        {error && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded" role="alert">
+            <p className="font-medium ml-16">{error}</p>
+          </div>
+        )}
+        
+        <div className="bg-[#1e293b] rounded-lg border border-[#3b4754] ml-16 p-8 min-w-fit min-h-fit">
+          <Table data={tableData} />
+        </div>
+      </div>
+<ContentModel open={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }

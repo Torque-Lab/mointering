@@ -1,30 +1,35 @@
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: "primary" | "secondary";
-  text: string;
+  variant?: "primary" | "secondary";
+  text?: string;
   startIcon?: ReactElement;
-  onClick?: () => void;
+  children?: ReactNode;
 }
 
 const variantClasses = {
-  primary: "bg-purple-600 text-white",
-  secondary: "bg-purple-400 text-white",
+  primary: "bg-purple-600 text-white hover:bg-purple-700",
+  secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
 };
 
-const defultStyle =
-  "px-4 py-2 rounded-md font-light flex justify-end items-centor cursor-pointer";
-export function Button({ variant, text, startIcon, onClick, className = '', ...props }: ButtonProps) {
+const defaultStyle = "px-4 py-2 rounded-md font-medium flex items-center justify-center gap-2 transition-colors";
+
+export function Button({ 
+  variant = "primary", 
+  text, 
+  startIcon, 
+  children,
+  className = '', 
+  ...props 
+}: ButtonProps) {
   return (
     <button
-      className={`${variantClasses[variant]} ${defultStyle} ${className}`}
-      onClick={onClick}
+      type={props.type || 'button'}
+      className={`${variantClasses[variant]} ${defaultStyle} ${className}`}
       {...props}
     >
-      <div className="flex items-center pr-4 gap-x-2">
-        {startIcon}
-        {text}
-      </div>
+      {startIcon}
+      {text || children}
     </button>
   );
 }

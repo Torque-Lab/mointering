@@ -81,6 +81,17 @@ export const signIn = async (req: Request, res: Response) => {
     }
 };
 
+export const logout = async (req: Request, res: Response) => {
+    try {
+        res.clearCookie("access_token");
+        res.clearCookie("refresh_token");
+        res.redirect("/sign-in");
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to sign out" });
+    }
+};
+
 export const refresh = async (req: Request, res: Response) => {
     try {
         const refresh_token = req.cookies.refresh_token;

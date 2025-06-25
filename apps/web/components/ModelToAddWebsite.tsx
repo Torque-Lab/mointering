@@ -1,75 +1,154 @@
 import { useState } from "react";
 import { Button } from "./Button";
 
-interface modelProps {
+interface ContentModelProps {
   open: boolean;
   onClose: () => void;
+  className?: string;
 }
-export function ContentModel({ open, onClose }: modelProps) {
+
+export default function ContentModel({ open, onClose, className = '' }: ContentModelProps) {
+  if (!open) return null;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    url: '',
+    email: ''
+  });
+  
   if (!open) return null;
   
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // TODO: Implement form submission
+      console.log('Form submitted:', formData);
+      // Reset form
+      setFormData({ name: '', url: '', email: '' });
+      onClose();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className={`fixed inset-0 z-50 overflow-y-auto ${className}`}>
+      <div className="fixed inset-0 bg-black/50" aria-hidden="true" onClick={onClose} />
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div 
+          className="relative bg-white rounded-lg max-w-md w-full p-6 mx-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900">Add New Service</h3>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500"
+              aria-label="Close"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
+          </div>
       <div className="flex min-h-screen items-center justify-center p-4">
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
           onClick={onClose}
+          aria-hidden="true"
         />
         <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
           <div className="absolute right-4 top-4">
             <button
+              type="button"
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500"
+              aria-label="Close"
             >
               <CrossIcon />
             </button>
           </div>
           <div className="space-y-6">
             <h3 className="text-lg font-medium text-gray-900">Add New Service</h3>
-            <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Service Name
+                </label>
+                <InputBox
+                  id="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter service name"
+                  className="w-full"
+                  required
+                />
+              </div>
               <div>
                 <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-                  Website URL
+                  Service URL
                 </label>
-                <InputBox 
+                <InputBox
                   id="url"
-                  placeholder="https://example.com/health" 
+                  type="url"
+                  value={formData.url}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com"
                   className="w-full"
+                  required
                 />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email to notify
+                  Notification Email (Optional)
                 </label>
-                <InputBox 
+                <InputBox
                   id="email"
                   type="email"
-                  placeholder="your@email.com" 
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="your@email.com"
                   className="w-full"
                 />
               </div>
-            </div>
-            <div className="flex justify-end space-x-3">
-              <Button 
-                variant="secondary" 
-                text="Cancel" 
-                onClick={onClose}
-              />
-              <Button 
-                variant="primary" 
-                text="Add Service"
-                onClick={() => {
-                
-                  onClose();
-                }}
-              />
-            </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Adding...' : 'Add Service'}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
+    </div>
+    </div>
   );
-}
+};
+
 
 interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder: string;

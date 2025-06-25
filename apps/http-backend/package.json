@@ -12,14 +12,23 @@
   "dependencies": {
     "@repo/backend-common": "workspace:*",
     "@repo/db": "workspace:*",
+    "@types/cookie-parser": "^1.4.9",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "ts-node": "^10.9.2"
+    "jsonwebtoken": "^9.0.2",
+    "resend": "^4.6.0",
+    "ts-node": "^10.9.2",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.2"
+    "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.10"
   },
   "author": "",
   "license": "ISC",

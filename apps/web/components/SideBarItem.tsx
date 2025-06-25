@@ -19,7 +19,7 @@ export function SideBarItem({
   return (
     <li>
       <div 
-        className={`flex items-center py-2.5 px-4 text-gray-600 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors ${
+        className={`flex items-center py-2.5 px-4 text-[#aea9b3] hover:text-[#3d3d3d] hover:bg-gray-50 rounded-lg cursor-pointer transition-colors ${
           isActive ? 'bg-purple-50 text-purple-600' : 'hover:bg-gray-50'
         } ${className}`}
         onClick={onClick}
