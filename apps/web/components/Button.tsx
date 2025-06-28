@@ -1,35 +1,43 @@
-import { ReactElement, ReactNode } from "react";
+import { ButtonHTMLAttributes, forwardRef, ReactElement, ReactNode } from 'react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary";
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'outline' | 'primary' | 'secondary';
   text?: string;
   startIcon?: ReactElement;
   children?: ReactNode;
 }
 
-const variantClasses = {
-  primary: "bg-purple-600 text-white hover:bg-purple-700",
-  secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({
+    className = '',
+    variant = 'default',
+    text,
+    startIcon,
+    children,
+    type = 'button',
+    ...props
+  }, ref) => {
+    const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none px-4 py-2 gap-2';
+    
+    const variants = {
+      default: 'bg-indigo-600 text-white hover:bg-indigo-700',
+      outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
+      primary: 'bg-purple-600 text-white hover:bg-purple-700',
+      secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+    };
 
-const defaultStyle = "px-4 py-2 rounded-md font-medium flex items-center justify-center gap-2 transition-colors";
+    return (
+      <button
+        type={type}
+        className={`${baseStyles} ${variants[variant]} ${className}`}
+        ref={ref}
+        {...props}
+      >
+        {startIcon}
+        {text || children}
+      </button>
+    );
+  }
+);
 
-export function Button({ 
-  variant = "primary", 
-  text, 
-  startIcon, 
-  children,
-  className = '', 
-  ...props 
-}: ButtonProps) {
-  return (
-    <button
-      type={props.type || 'button'}
-      className={`${variantClasses[variant]} ${defaultStyle} ${className}`}
-      {...props}
-    >
-      {startIcon}
-      {text || children}
-    </button>
-  );
-}
+Button.displayName = 'Button';
