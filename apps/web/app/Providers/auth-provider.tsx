@@ -1,6 +1,7 @@
+
 "use client";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
 
 interface User {
   id: string;
@@ -8,43 +9,38 @@ interface User {
   username: string;
 }
 
-interface AuthContextType {
+interface Session {
   user: User | null;
   loading: boolean;
-  refreshUser: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
-let isRefreshing=false;
-const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+let isRefreshing = false;
+
+export function useSession(): Session {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  
+
   const fetchUser = useCallback(async () => {
     if (isRefreshing) return;
     isRefreshing = true;
-    
+
     try {
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-      console.log(response,"response");
 
-      if (response.ok) {
-        const data = await response.json() as User;
+      if (res.ok) {
+        const data = await res.json() as User;
         setUser(data);
-        console.log(data,"data");
         setLoading(false);
-        isRefreshing = false;
         return;
       }
 
-    
-      if (response.status === 401) {
+      if (res.status === 401) {
         await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/refresh`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -58,15 +54,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (retry.ok) {
-          const dataRetry = await retry.json() as User;
-          setUser(dataRetry);
+          const retryData = await retry.json() as User;
+          setUser(retryData);
         } else {
           setUser(null);
           router.push("/login");
         }
       }
-    } catch (error) {
-      console.error("Error fetching user:", error);
+    } catch (err) {
+      console.error("Session fetch failed:", err);
       setUser(null);
     } finally {
       setLoading(false);
@@ -74,24 +70,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [router]);
 
-  const refreshUser = async () => {
-    await fetchUser();
-  };
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
-  return (
-    <AuthContext.Provider value={{ user, loading, refreshUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const refresh = async () => {
+    await fetchUser();
+  };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+  return { user, loading, refresh };
+}

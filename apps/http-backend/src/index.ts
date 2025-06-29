@@ -21,8 +21,8 @@ app.use(cors({
 
 app.use("/api/auth", authRouter);
 app.use("/api/add-service", addServiceRouter);
-app.use("/api/metric", metricRouter);
-app.use("/api/website", websiteRouter);
+app.use("/api", metricRouter);
+app.use("/api", websiteRouter);
 
 app.get("/status", async (req, res) => {
   const websiteId = req.query.websiteId as string

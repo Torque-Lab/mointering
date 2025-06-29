@@ -3,7 +3,8 @@ import { prismaClient } from "@repo/db/prisma";
 
 export const getWebsites = async (req: Request, res: Response) => {
   try {
-   
+    console.log(req)
+    console.log(req.cookies,"cookies",)
     const websites = await prismaClient.website.findMany({
       include: {
         ticks: {
@@ -29,7 +30,7 @@ export const getWebsites = async (req: Request, res: Response) => {
       return res.json(getDummyData());
     }
 
-    res.json(formattedWebsites);
+    res.status(200).json(formattedWebsites);
   } catch (error) {
     console.error('Error fetching websites:', error);
     res.json(getDummyData());

@@ -1,3 +1,5 @@
+
+"use client"
 import { useState } from 'react';
 import { HomeIcons } from "../ui-icons/HomeIcons";
 import { MenuIcons } from "../ui-icons/MenuIcons";
