@@ -6,6 +6,7 @@ export default async function getSessionServer() {
   
     if (!token) return null;
   
-return token.value;
+   return token.value;
+
   }
   

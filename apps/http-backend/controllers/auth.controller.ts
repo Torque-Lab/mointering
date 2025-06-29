@@ -15,6 +15,7 @@ import jwt from "jsonwebtoken";
 
 export const signUp = async (req: Request, res: Response) => {
     try {
+        console.log(req.body)
        const parsedData = SignUpSchema.safeParse(req.body);
        if(!parsedData.success) {
          res.status(400).json({ error: "Invalid data" });
@@ -64,17 +65,18 @@ export const signIn = async (req: Request, res: Response) => {
         
         res.cookie("access_token",access_token,{
             httpOnly:true,
-            secure:true,
+            secure:false,
             sameSite:"strict",
             maxAge:60*60*1000
         })
         res.cookie("refresh_token",refresh_token,{
             httpOnly:true,
-            secure:true,
+            secure:false,
             sameSite:"strict",
             maxAge:60*60*1000*24*7
         })
-        res.redirect('/home');
+        res.status(200).json({ message: "User signed in successfully" });
+    
     } catch (error) {
        console.log(error);
        res.status(500).json({ error: "Failed to sign in" });
@@ -85,7 +87,7 @@ export const logout = async (req: Request, res: Response) => {
     try {
         res.clearCookie("access_token");
         res.clearCookie("refresh_token");
-        res.redirect("/sign-in");
+        res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Failed to sign out" });
@@ -97,23 +99,21 @@ export const refresh = async (req: Request, res: Response) => {
         const refresh_token = req.cookies.refresh_token;
         if (!refresh_token) {
             res.status(401).json({ error: "Invalid token" });
-            res.redirect("/sign-in");
             return;
         }
         const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_REFRESH || 'your-secret-key') as { userId: string };
         if (!decoded.userId) {
             res.status(401).json({ error: "Invalid token" });
-            res.redirect("/sign-in");
             return;
         }
         const access_token = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
         res.cookie("access_token", access_token, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             sameSite: "strict",
             maxAge: 60 * 60 * 1000
         });
-        res.json({ access_token });
+        res.status(200).json({ access_token });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Failed to refresh token" });
@@ -200,28 +200,38 @@ export const resetPassword = async (req: Request, res: Response) => {
 };  
 
 export const getProfile = async (req: Request, res: Response) => {
-    try {
-        const user = await prismaClient.user.findUnique({
-            where: {
-                username: req.params.username
-            },
-            select: {
-                id: true,
-                username: true,
-                name: true,
-                image: true,
-                createdAt: true,
-            },
-        });
-        
-        if (!user) {
-            res.status(404).json({ error: "User not found" });
-            return;
-        }
-        
-         res.status(200).json(user);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Failed to get user profile" });
-    }
+
+const access_token = req.cookies.access_token;
+console.log("HEADERS:", req.headers);
+console.log("RAW COOKIE HEADER:", req.headers.cookie);
+console.log("PARSED COOKIES:", req.cookies);
+
+if (!access_token) {
+    res.status(401).json({ error: "Invalid token" });
+    return;
+}
+const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || '') as { userId: string };
+if (!decoded.userId) {
+    res.status(401).json({ error: "Invalid token" });
+    return;
+}
+const user = await prismaClient.user.findUnique({
+    where: {
+        id: decoded.userId,
+    },
+    select: {
+        id: true,
+        username: true,
+        name: true,
+        image: true,
+        createdAt: true,
+    },
+});
+
+if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+}
+
+res.status(200).json(user);
 };

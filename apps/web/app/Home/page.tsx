@@ -5,17 +5,33 @@ import { PlusIcon } from "../../ui-icons/PlusIcons";
 import { Sidebar } from "../../components/SideBar";
 import { useState, useEffect } from "react";
 import ContentModel from "../../components/ModelToAddWebsite";
+import { useAuth } from "../Providers/auth-provider";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [tableData, setTableData] = useState<TableRowData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
   useEffect(() => {
+    // Only check for user after auth has finished loading
+    if (loading) return;
+    
+    console.log("Auth loading state:", loading);
+    console.log("Current user:", user);
+    
+    if (!user) {
+      console.log("No user found, redirecting to login");
+      router.push('/login');
+      return;
+    }
+    
     const fetchWebsites = async () => {
       try {
-        const response = await fetch('/api/websites', {
+        const response = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL+'/api/websites', {
           credentials: 'include',
           next: { revalidate: 300} 
         });
@@ -65,7 +81,7 @@ export default function Home() {
     };
 
     fetchWebsites();
-  }, []);
+  }, [user, router, loading]);
 
   const handleAddService = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);

@@ -15,7 +15,7 @@ export default function Auth({ isLogin , onSuccess, onError }: AuthProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    username: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,11 +37,13 @@ export default function Auth({ isLogin , onSuccess, onError }: AuthProps) {
     try {
      
 const endpoint = isLogin ? '/api/auth/sign-in' : '/api/auth/sign-up';
+console.log(process.env.NEXT_PUBLIC_API_BASE_URL+endpoint,"NEXT_PUBLIC_API_BASE_URL")
       const response = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
       
@@ -120,16 +122,16 @@ const endpoint = isLogin ? '/api/auth/sign-in' : '/api/auth/sign-up';
           )}
 
           <div>
-            <label htmlFor="email" className="sr-only">
-               Email
+            <label htmlFor="username" className="sr-only">
+               Username
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="username"
               required
-              value={formData.email}
+              value={formData.username}
               onChange={handleChange}
               className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Work Email"

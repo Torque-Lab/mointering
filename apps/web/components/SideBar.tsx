@@ -80,7 +80,7 @@ export function Sidebar() {
                   icon={<LogOutIcons />} 
                   className="text-[#e65535] hover:text-[#29292b] focus:outline-none cursor-pointer"
                   onClick={() => {
-                    fetch('/api/auth/logout',
+                    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/logout`,
                     
                     {
                     method: 'POST',
@@ -89,7 +89,7 @@ export function Sidebar() {
                     },
                     credentials: 'include'
                   }).then(() => {
-                    router.push('/sign-in');
+                    router.push('/login');
                   })
                 }}
                 />

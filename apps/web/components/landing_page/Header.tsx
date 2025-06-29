@@ -68,7 +68,7 @@ export default function Header() {
               Log in
             </Link>
             <Link 
-              href="/signup" 
+              href="/sign-up" 
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
             >
               Get Started
@@ -90,7 +90,7 @@ export default function Header() {
 
         {isOpen && (
           <div className="md:hidden mt-4 pb-4">
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 bg-white justify-center ">
               {navItems.map((item) => (
                 <Link 
                   key={`mobile-${item.name}`}
@@ -110,7 +110,7 @@ export default function Header() {
                   Log in
                 </Link>
                 <Link 
-                  href="/signup" 
+                  href="/sign-up" 
                   className="block px-4 py-2 bg-indigo-600 text-white text-center rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                   onClick={() => setIsOpen(false)}
                 >
