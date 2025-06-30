@@ -1,20 +1,17 @@
-import { Sidebar } from "../../components/SideBar";
+import { Sidebar } from "../components/SideBar";
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import WebsiteTable from '../../components/dashboard/WebsiteTable';
 
+import WebsiteTable from '../components/dashboard/WebsiteTable';
+import getSessionInServer from '../Providers/session-server';
+import { NEXT_PUBLIC_URL } from '../lib/config';
 
 export default async function Home() {
-  // Check authentication on server side
-  const cookieStore =  await cookies();
-  const token = cookieStore.get('access_token');
+const token = await getSessionInServer();
   
   if (!token) {
     redirect('/login');
   }
-
-  // Fetch data on the server
-  const websites = await getWebsites();
+  const websites = await getWebsites(token);
 
   return (
     <div className="flex min-h-screen bg-[#182636] min-w-fit">
@@ -24,15 +21,14 @@ export default async function Home() {
   );
 }
 
-async function getWebsites() {
+async function getWebsites(token:string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/websites`, {
-      credentials: 'include',
-  
+    const response = await fetch(`${NEXT_PUBLIC_URL}/api/websites`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       next: { revalidate: 300 }
     });
-
-    console.log(response,"response");
 
     if (!response.ok) {
       throw new Error('Failed to fetch websites');

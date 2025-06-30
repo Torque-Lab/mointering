@@ -27,10 +27,7 @@ export function useSession(): Session {
     isRefreshing = true;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      const res = await fetch(`/api/auth/session`, {
       });
 
       if (res.ok) {
@@ -41,16 +38,10 @@ export function useSession(): Session {
       }
 
       if (res.status === 401) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/refresh`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+        await fetch(`/api/auth/refresh`, {
         });
 
-        const retry = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+        const retry = await fetch(`/api/auth/session`, {
         });
 
         if (retry.ok) {

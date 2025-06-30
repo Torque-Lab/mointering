@@ -37,8 +37,7 @@ export default function Auth({ isLogin , onSuccess, onError }: AuthProps) {
     try {
      
 const endpoint = isLogin ? '/api/auth/sign-in' : '/api/auth/sign-up';
-console.log(process.env.NEXT_PUBLIC_API_BASE_URL+endpoint,"NEXT_PUBLIC_API_BASE_URL")
-      const response = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + endpoint, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

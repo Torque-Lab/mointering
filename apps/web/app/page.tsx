@@ -1,7 +1,7 @@
-import Header from "../components/landing_page/Header";
-import { Footer } from "../components/landing_page/Footer";
-import { HeroSection } from "../components/landing_page/HeroSection";
-import { FeatureSection } from "../components/landing_page/FeatureSection";
+import Header from "./components/landing_page/Header";
+import { Footer } from "./components/landing_page/Footer";
+import { HeroSection } from "./components/landing_page/HeroSection";
+import { FeatureSection } from "./components/landing_page/FeatureSection";
 
 export default function Home() {
   return (

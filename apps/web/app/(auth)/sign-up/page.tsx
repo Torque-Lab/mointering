@@ -1,6 +1,6 @@
 
 "use client";
-import Auth from "../../../components/Auth";
+import Auth from "../../components/Auth";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {

@@ -1,15 +1,9 @@
-"use client";
-
+'use client'; 
 import { useState } from 'react';
 import { format, isWithinInterval } from 'date-fns';
+import { UptimeData } from '../types/uptime';
 
-export type Status = "Up" | "Down" | "Unknown";
 
-export interface UptimeData {
-  status: Status;
-  timestamp: string;
-  duration: number;
-}
 
 export interface UptimeChartProps {
   data: UptimeData[];
@@ -20,12 +14,14 @@ export interface UptimeChartProps {
 }
 
 const statusClasses = {
-  Up: "bg-green-500 hover:bg-green-600",
-  Down: "bg-red-500 hover:bg-red-600",
+  Up: "bg-green-600 hover:bg-green-600",
+  Down: "bg-red-600 hover:bg-red-600",
   Unknown: "bg-gray-300 hover:bg-gray-400",
 };
 
 export default function UptimeChart({ data, dateRange }: UptimeChartProps) {
+
+
   const [tooltip, setTooltip] = useState<{
     visible: boolean;
     content: string;
@@ -83,7 +79,7 @@ export default function UptimeChart({ data, dateRange }: UptimeChartProps) {
           filteredData.map((item, idx) => (
             <div
               key={`${item.timestamp}-${idx}`}
-              className={`w-4 mx-0.5 rounded-t-sm transition-all cursor-help ${
+              className={`w-3 mx-[2px] rounded-t-sm transition-all cursor-pointer ${
                 statusClasses[item.status]
               }`}
               style={{
@@ -103,7 +99,7 @@ export default function UptimeChart({ data, dateRange }: UptimeChartProps) {
         )}
       </div>
 </div>
-      {tooltip?.visible && (
+      { tooltip?.visible && tooltip?.x !== undefined && tooltip?.y !== undefined && tooltip?.content !== undefined && (
         <div
           className="fixed bg-gray-900 text-white text-xs p-2 rounded shadow-lg z-50 whitespace-pre-line pointer-events-none"
           style={{
@@ -112,7 +108,7 @@ export default function UptimeChart({ data, dateRange }: UptimeChartProps) {
             transform: 'translateX(-50%)',
           }}
         >
-          {tooltip.content}
+          {tooltip?.content}
         </div>
       )}
     </div>

@@ -1,6 +1,9 @@
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
-import UptimeChart, { Status, UptimeData } from "../../../components/UptimeChart";
+import dynamic from 'next/dynamic';
+import { UptimeData } from "../../types/uptime";
+import UptimeChart from "../../components/UptimeChart"; 
 
+import { NEXT_PUBLIC_URL } from "../../lib/config";
 interface Props {
   params: {
     serviceId: string[];
@@ -9,8 +12,6 @@ interface Props {
     days?: string;
   };
 }
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 interface UptimeSummary {
   last24h: string;
@@ -23,7 +24,7 @@ async function fetchMetrics(serviceId: string, from: Date, to: Date): Promise<Up
   const toISO = to.toISOString();
   
   const res = await fetch(
-    `${API_BASE_URL}/api/metrics/${serviceId}?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`,
+    `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`,
     { 
       credentials: 'include',
       next: { revalidate: 300 } // Revalidate every 5 minutes
@@ -39,7 +40,7 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 
 async function fetchUptimeSummary(serviceId: string): Promise<UptimeSummary> {
   const res = await fetch(
-    `${API_BASE_URL}/api/metrics/${serviceId}/uptime-summary`,
+    `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}/uptime-summary`,
     { 
       credentials: 'include',
       next: { revalidate: 300 } // Revalidate every 5 minutes
@@ -74,7 +75,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
     fetchMetrics(serviceId, dateRange.from, dateRange.to),
     fetchUptimeSummary(serviceId)
   ]);
-  console.log(metrics,"metrics");
+  
   const chartData = metrics.map(item => ({
     status: item.status,
     timestamp: item.timestamp,
@@ -85,7 +86,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
     const itemDate = new Date(item.timestamp);
     return itemDate >= dateRange.from && itemDate <= dateRange.to;
   });
-console.log(filteredData,"data");
+
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
@@ -117,13 +118,19 @@ console.log(filteredData,"data");
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">Uptime Overview</h2>
           <div className="h-64">
-            <UptimeChart 
-              data={chartData || []} 
-              dateRange={{
-                from: startOfDay(dateRange.from),
+            {
+              filteredData.length > 0 ? (
+                <UptimeChart 
+                  data={filteredData || []} 
+                  dateRange={{
+                    from: startOfDay(dateRange.from),
                 to: endOfDay(dateRange.to)
               }}
-            />
+            />    
+              ) : (
+                <p className="text-gray-400">No data available for the selected date range</p>
+              )
+            }
           </div>
         </div>
 
