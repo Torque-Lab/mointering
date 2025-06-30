@@ -10,14 +10,17 @@ import websiteRouter from "../routes/website.routes";
 import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
-
+const isDev=process.env.NODE_ENV==='developement';
+if(!isDev){
+  app.set("trust proxy", 1);
+}
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// app.use(cors({
+//   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
 
 app.use("/api/auth", authRouter);
 app.use("/api/add-service", addServiceRouter);
@@ -39,6 +42,10 @@ app.get("/status", async (req, res) => {
 });
 
 
+app.get('/api/test', async (req, res) => {
+  console.log("Hello from the server!")
+  res.status(200).json({ message: "Hello from the server!" })
+})
 async function taskScheduler() {
   async function run() {
     try {

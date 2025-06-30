@@ -12,6 +12,18 @@ import { isOTPValid } from "../utils/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+function setAuthCookie(res: Response, token: string, token_name: string) {
+    const isDev = process.env.NODE_ENV === "development";
+  console.log(process.env.NODE_ENV,"NODE_ENV")
+    res.cookie(token_name, token, {
+      httpOnly: true,
+      secure: !isDev,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000,
+      path: "/"
+    });
+  }
+  
 
 export const signUp = async (req: Request, res: Response) => {
     try {
@@ -63,25 +75,17 @@ export const signIn = async (req: Request, res: Response) => {
         const access_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_ACCESS!,);
         const refresh_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_REFRESH!,);
         
-        res.cookie("access_token",access_token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"strict",
-            maxAge:60*60*1000
-        })
-        res.cookie("refresh_token",refresh_token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"strict",
-            maxAge:60*60*1000*24*7
-        })
+        setAuthCookie(res, access_token, "access_token");
+        setAuthCookie(res, refresh_token, "refresh_token");
+        
         res.status(200).json({ message: "User signed in successfully" });
-    
     } catch (error) {
        console.log(error);
        res.status(500).json({ error: "Failed to sign in" });
     }
 };
+        
+     
 
 export const logout = async (req: Request, res: Response) => {
     try {
@@ -107,12 +111,8 @@ export const refresh = async (req: Request, res: Response) => {
             return;
         }
         const access_token = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
-        res.cookie("access_token", access_token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-            maxAge: 60 * 60 * 1000
-        });
+     
+        setAuthCookie(res, access_token, "access_token");
         res.status(200).json({ access_token });
     } catch (error) {
         console.log(error);

@@ -9,7 +9,7 @@ router.post("/sign-up", signUp);
 router.post("/sign-in", signIn);
 router.post("/refresh", refresh)
 router.post("/logout", logout)
-router.get("/me", getProfile);
+router.get("/session", getProfile);
 
 
 export default router;
