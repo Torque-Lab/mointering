@@ -5,10 +5,8 @@ import { Request, Response } from "express";
 import { SignInSchema } from "../zod/authSchema";
 import { ForgotSchema } from "../zod/authSchema";
 import { ResetSchema } from "../zod/authSchema";
-import { deleteToken, generateOTP, isTokenValid, storeToken } from "../utils/otp";
-import { storeOTP } from "../utils/otp";
-import { sendOTPEmail, sendPasswordResetEmail } from "../utils/sendOtp";
-import { isOTPValid } from "../utils/otp";
+import { GetKeyValue, IncreaseValueOfKey, isTokenValid, SetKeyValue, storeToken } from "../utils/otp";
+import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -57,18 +55,18 @@ export const signIn = async (req: Request, res: Response) => {
             return;
         }
         const { username, password } = parsedData.data;
-        const user = await prismaClient.user.findUnique({
-            where: {
-                username: username
-            }
-        });
-        if(!user) {
-            res.status(404).json({ error: "User not found" });
-            return;
+        const failedAttempts = await GetKeyValue(username);
+        if (failedAttempts != null && failedAttempts >= 6) {
+           res.status(403).json({ message: "Too many failed login attempts. Try again in 24 hours  or reset your password" });
+           return;
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if(!isPasswordValid) {
-            res.status(401).json({ error: "Invalid password" });
+        
+        const user = await prismaClient.user.findUnique({ where: { username } });
+        
+        const isValid = user && await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            await IncreaseValueOfKey(username,24);
+            res.status(401).json({ error: "Invalid username or password" });
             return;
         }
         const access_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_ACCESS!,);
@@ -83,9 +81,6 @@ export const signIn = async (req: Request, res: Response) => {
        res.status(500).json({ error: "Failed to sign in" });
     }
 };
-        
-     
-
 export const logout = async (req: Request, res: Response) => {
     try {
         res.clearCookie("access_token");
@@ -128,6 +123,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
         }
     
         const email = parsedData.data.username;
+        const forgotAttempts = await GetKeyValue(email);
+        if(forgotAttempts!=null && forgotAttempts>4){
+            res.status(403).json({ message: "Too many requests try after 24 hours" });
+            return;
+        }
         const user = await prismaClient.user.findFirst({
           where: {
             username: email,
@@ -140,6 +140,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         }
     
         if (user) {
+            await IncreaseValueOfKey(email,24);
             const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
             storeToken(token);  
             const link = `http://localhost:3000/reset-password?oneTimeToken=${token}`;
@@ -165,7 +166,6 @@ export const resetPassword = async (req: Request, res: Response) => {
             res.status(400).json({ message: "Invalid data" });
             return;
         }
-    
         const { username, token, newPassword } = parsedData.data;
 
         const isValidToken = isTokenValid(token);
@@ -190,8 +190,7 @@ export const resetPassword = async (req: Request, res: Response) => {
         await prismaClient.user.update({
             where: { username },
             data: { password: hashedPassword },
-        });
-        deleteToken(token);     
+        });   
     
          res.json({ message: "Password reset successfully" });
     } catch (error) {
@@ -203,10 +202,6 @@ export const resetPassword = async (req: Request, res: Response) => {
 export const getProfile = async (req: Request, res: Response) => {
 
 const access_token = req.cookies.access_token;
-console.log("HEADERS:", req.headers);
-console.log("RAW COOKIE HEADER:", req.headers.cookie);
-console.log("PARSED COOKIES:", req.cookies);
-
 if (!access_token) {
     res.status(401).json({ error: "Invalid token" });
     return;

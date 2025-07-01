@@ -2,7 +2,6 @@ import { createClient } from "redis";
 
 type OTPData = {
     otp: string;
-    expiresAt: number;
 };
 
 const client = createClient({
@@ -35,10 +34,9 @@ export function generateOTP(length: number = 6): string {
 export async function storeOTP(email: string, otp: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `otp:${email}`;
-        const expiresAt = Date.now() + ttlInMinutes * 60 * 1000;
-        const result = await client.set(key, JSON.stringify({ otp, expiresAt }), {
-            EX: ttlInMinutes * 60,
-            NX: true 
+        const result = await client.set(key, JSON.stringify({ otp }), {
+            expiration: { type: 'EX', value: ttlInMinutes * 60 },
+            NX: true
         });
         return result === 'OK';
     } catch (error) {
@@ -46,6 +44,7 @@ export async function storeOTP(email: string, otp: string, ttlInMinutes = 15): P
         return false;
     }
 }
+
 
 export async function getOTP(email: string): Promise<OTPData | null> {
     try {
@@ -58,17 +57,6 @@ export async function getOTP(email: string): Promise<OTPData | null> {
     }
 }
 
-export async function deleteOTP(email: string): Promise<boolean> {
-    try {
-        const key = `otp:${email}`;
-        await client.del(key);
-        return true;
-    } catch (error) {
-        console.error('Error deleting OTP from Redis:', error);
-        return false;
-    }
-}
-
 export async function isOTPValid(email: string, otp: string): Promise<boolean> {
     try {
         const storedData = await getOTP(email);
@@ -76,11 +64,7 @@ export async function isOTPValid(email: string, otp: string): Promise<boolean> {
             return false;
         }
         
-        const isValid = storedData.otp === otp && storedData.expiresAt > Date.now();
-        
-        if (!isValid || storedData.expiresAt <= Date.now()) {
-            await deleteOTP(email);
-        }
+        const isValid = storedData.otp === otp;
         
         return isValid;
     } catch (error) {
@@ -92,10 +76,8 @@ export async function isOTPValid(email: string, otp: string): Promise<boolean> {
 export async function storeToken(token: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `token:${token}`;
-        const expiresAt = Date.now() + ttlInMinutes * 60 * 1000;
-        const result = await client.set(key, JSON.stringify({ token, expiresAt }), {
-            EX: ttlInMinutes * 60,
-            NX: true 
+        const result = await client.set(key, JSON.stringify({ token }), {
+            expiration: { type: 'EX', value: ttlInMinutes * 60 },
         });
         return result === 'OK';
     } catch (error) {
@@ -104,11 +86,8 @@ export async function storeToken(token: string, ttlInMinutes = 15): Promise<bool
     }
 }
 
-
-
 type TokenData = {
     token: string;
-    expiresAt: number;
 };
 
 export async function getToken(token: string): Promise<TokenData | null> {
@@ -122,33 +101,58 @@ export async function getToken(token: string): Promise<TokenData | null> {
     }
 }
 
-export async function deleteToken(token: string): Promise<boolean> {
-    try {
-        const key = `token:${token}`;
-        await client.del(key);
-        return true;
-    } catch (error) {
-        console.error('Error deleting token from Redis:', error);
-        return false;
-    }
-}
-
 export async function isTokenValid(token: string): Promise<boolean> {
     try {
         const storedData = await getToken(token);
         if (!storedData) {
             return false;
-        }
-            
-            const isValid = storedData.token === token && storedData.expiresAt > Date.now();
-            
-            if (!isValid || storedData.expiresAt <= Date.now()) {
-                await deleteToken(token);
-            }
-            
-            return isValid;
-        } catch (error) {
-            console.error('Error validating token:', error);
-            return false;
-        }
+        } 
+        const isValid = storedData.token === token;
+        return isValid;
+    } catch (error) {
+        console.error('Error validating token:', error);
+        return false;
     }
+}
+
+export async function SetKeyValue(key:string,value:number,ttlInMinutes = 24):Promise<boolean>{
+    try {
+        const result = await client.set(key, JSON.stringify(value),{
+            expiration: { type: 'EX', value: ttlInMinutes * 60*60 },
+        });
+        return result === 'OK';
+    } catch (error) {
+        console.error('Error storing key-value pair in Redis:', error);
+        return false;
+    }
+}
+
+export async function GetKeyValue(key:string):Promise<number | null>{
+    try {
+        const data = await client.get(key);
+        return data ? JSON.parse(data) : null;
+    } catch (error) {
+        console.error('Error getting key-value pair from Redis:', error);
+        return null;
+    }
+}
+
+export async function DeleteKey(key:string):Promise<boolean>{
+    try {
+        const result = await client.del(key);
+        return result === 1;
+    } catch (error) {
+        console.error('Error deleting key-value pair from Redis:', error);
+        return false;
+    }
+}
+
+export async function IncreaseValueOfKey(key:string):Promise<number | null>{
+    try {
+        const result = await client.incr(key);
+        return result;
+    } catch (error) {
+        console.error('Error increasing key-value pair from Redis:', error);
+        return null;
+    }
+}
