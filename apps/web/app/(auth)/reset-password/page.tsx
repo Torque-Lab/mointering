@@ -47,7 +47,6 @@ export default function ResetPasswordPage() {
             return;
         }
         
-        // Add your password reset logic here
         try {
             const response = await fetch('/api/auth/reset-password', {
                 method: 'POST',

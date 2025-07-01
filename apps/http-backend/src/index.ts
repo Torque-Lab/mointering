@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
-
 import { prismaClient } from "@repo/db/prisma";
 import { pushManyToQueue } from "@repo/backend-common/rabbit";
+import { redisService } from "../services/redis.service";
 import authRouter from "../routes/auth.routes";
 import addServiceRouter from "../routes/add_service.route";
 import metricRouter from "../routes/metric.routes";
 import websiteRouter from "../routes/website.routes";
 import cookieParser from "cookie-parser";
+
 const app = express();
 app.use(express.json());
 const isDev=process.env.NODE_ENV==='developement';
@@ -46,6 +47,8 @@ app.get('/api/test', async (req, res) => {
   console.log("Hello from the server!")
   res.status(200).json({ message: "Hello from the server!" })
 })
+
+
 async function taskScheduler() {
   async function run() {
     try {
@@ -72,6 +75,31 @@ async function taskScheduler() {
 // taskScheduler();
 
 
-app.listen(process.env.PORT || 3001, () => {
-  console.log("Server started on port 3001");
+async function startServer() {
+  try {
+    await redisService.connect();
+    console.log('Connected to Redis');
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received. Shutting down ......');
+  try {
+    await redisService.disconnect();
+    console.log('Redis connection closed');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+    process.exit(1);
+  }
 });
+
+
+startServer();

@@ -38,7 +38,7 @@ export const SignInSchema = z.object({
   
   export const ResetSchema = z.object({
     username: z.string().min(3).max(54),
-    otp: z.string(),
+    token: z.string(),
     newPassword: z
       .string()
       .min(8)
