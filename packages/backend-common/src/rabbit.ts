@@ -1,6 +1,6 @@
 import amqp, { ChannelModel, Channel} from "amqplib";
 
-// Singleton pattern for connection and channel
+// Singleton for connection and channel
 let connection: ChannelModel | null = null;
 let channel: Channel | null = null;
 

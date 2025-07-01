@@ -5,9 +5,9 @@ import { Request, Response } from "express";
 import { SignInSchema } from "../zod/authSchema";
 import { ForgotSchema } from "../zod/authSchema";
 import { ResetSchema } from "../zod/authSchema";
-import { generateOTP } from "../utils/otp";
+import { deleteToken, generateOTP, isTokenValid, storeToken } from "../utils/otp";
 import { storeOTP } from "../utils/otp";
-import { sendOTPEmail } from "../utils/sendOtp";
+import { sendOTPEmail, sendPasswordResetEmail } from "../utils/sendOtp";
 import { isOTPValid } from "../utils/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -140,9 +140,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
         }
     
         if (user) {
-          const otp = generateOTP();
-          storeOTP(email, otp);
-          sendOTPEmail(email, otp);
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
+            storeToken(token);  
+            const link = `http://localhost:3000/reset-password?oneTimeToken=${token}`;
+            sendPasswordResetEmail(email, link);
         }
     
         res.status(200).json({
@@ -165,12 +166,12 @@ export const resetPassword = async (req: Request, res: Response) => {
             return;
         }
     
-        const { username, otp, newPassword } = parsedData.data;
+        const { username, token, newPassword } = parsedData.data;
 
-        const isValidOTP = isOTPValid(username, otp);
+        const isValidToken = isTokenValid(token);
     
-        if (!isValidOTP) {
-          res.status(403).json({ message: "Invalid OTP" });
+        if (!isValidToken) {
+          res.status(403).json({ message: "Invalid Token" });
           return;
         }
     
@@ -190,6 +191,7 @@ export const resetPassword = async (req: Request, res: Response) => {
             where: { username },
             data: { password: hashedPassword },
         });
+        deleteToken(token);     
     
          res.json({ message: "Password reset successfully" });
     } catch (error) {
