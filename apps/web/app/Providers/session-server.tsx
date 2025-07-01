@@ -6,6 +6,5 @@ export default async function getSessionInServer() {
     if (!token) return null;
   
    return token.value;
-
   }
   

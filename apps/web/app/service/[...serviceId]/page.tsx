@@ -71,9 +71,8 @@ export default async function ServicePage({ params, searchParams }: Props) {
   const days = await searchParams?.days ? Number(searchParams!.days) : 7;
   const dateRange = getDateRange(days);
   
-  const [metrics, uptimeSummary] = await Promise.all([
+  const [metrics] = await Promise.all([
     fetchMetrics(serviceId, dateRange.from, dateRange.to),
-    fetchUptimeSummary(serviceId)
   ]);
   
   const chartData = metrics.map(item => ({

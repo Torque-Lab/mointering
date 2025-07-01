@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { prismaClient } from "@repo/db/prisma";
 
 export const getWebsites = async (req: Request, res: Response) => {
+  const userId=req.user!
   try {
-    console.log(req)
-    console.log(req.cookies,"cookies",)
     const websites = await prismaClient.website.findMany({
+      where:{
+        user_id:userId
+      },
       include: {
         ticks: {
           orderBy: {
@@ -15,16 +17,32 @@ export const getWebsites = async (req: Request, res: Response) => {
         },
       },
     });
+    const calculateUptime = async (websiteId: string) => {
+      const twentyFourHoursAgo = new Date();
+      twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
 
-    const formattedWebsites = websites.map(website => ({
+      const result = await prismaClient.$queryRaw<{up: number, total: number}[]>`
+        SELECT 
+          COUNT(CASE WHEN status = 'Up' THEN 1 END)::int as up,
+          COUNT(*)::int as total
+        FROM "website_tick"
+        WHERE website_id = ${websiteId}
+          AND "createdAt" >= ${twentyFourHoursAgo}
+      `;
+      
+      const { up = 0, total = 0 } = result[0] || {};
+      return total > 0 ? (up / total * 100).toFixed(1) + '%' : '100%';
+    };
+
+    const formattedWebsites = await Promise.all(websites.map(async (website) => ({
       id: website.id,
       name: website.serviceName || 'Unnamed Service',
       url: website.url,
       status: website.ticks[0]?.status === 'Up' ? 'Online' : 'Offline',
-      uptime: '99.9%', 
+      uptime: await calculateUptime(website.id),
       responseTime: `${website.ticks[0]?.response_time_ms || 0}ms`,
       lastCheck: formatTimeAgo(website.ticks[0]?.createdAt || website.createdAt),
-    }));
+    })));
 
     if (formattedWebsites.length === 0) {
       return res.json(getDummyData());
