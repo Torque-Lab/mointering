@@ -12,14 +12,13 @@ import { isOTPValid } from "../utils/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-function setAuthCookie(res: Response, token: string, token_name: string) {
+function setAuthCookie(res: Response, token: string, token_name: string,maxAge:number) {
     const isDev = process.env.NODE_ENV === "development";
-  console.log(process.env.NODE_ENV,"NODE_ENV")
     res.cookie(token_name, token, {
       httpOnly: true,
       secure: !isDev,
       sameSite: "strict",
-      maxAge: 60 * 60 * 1000,
+      maxAge: maxAge,
       path: "/"
     });
   }
@@ -75,8 +74,8 @@ export const signIn = async (req: Request, res: Response) => {
         const access_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_ACCESS!,);
         const refresh_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_REFRESH!,);
         
-        setAuthCookie(res, access_token, "access_token");
-        setAuthCookie(res, refresh_token, "refresh_token");
+        setAuthCookie(res, access_token, "access_token",60 * 60 * 1000);
+        setAuthCookie(res, refresh_token, "refresh_token",60 * 60 * 1000*24*7);
         
         res.status(200).json({ message: "User signed in successfully" });
     } catch (error) {
@@ -112,7 +111,7 @@ export const refresh = async (req: Request, res: Response) => {
         }
         const access_token = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
      
-        setAuthCookie(res, access_token, "access_token");
+        setAuthCookie(res, access_token, "access_token",60 * 60 * 1000);
         res.status(200).json({ access_token });
     } catch (error) {
         console.log(error);
