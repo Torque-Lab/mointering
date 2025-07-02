@@ -5,6 +5,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text?: string;
   startIcon?: ReactElement;
   children?: ReactNode;
+  onClick?: () => void;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -14,6 +15,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     text,
     startIcon,
     children,
+    onClick,
     type = 'button',
     ...props
   }, ref) => {
@@ -31,6 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         className={`${baseStyles} ${variants[variant]} ${className}`}
         ref={ref}
+        onClick={onClick}
         {...props}
       >
         {startIcon}

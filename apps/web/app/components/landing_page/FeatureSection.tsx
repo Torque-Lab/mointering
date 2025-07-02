@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Monitor, Bell, BarChart2, Zap, Shield, Server } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 const features = [
   {
@@ -112,8 +113,8 @@ export function FeatureSection() {
           className="mt-16 text-center"
         >
           <p className="text-gray-500 mb-6">And many more features to help you stay on top of your website's health</p>
-          <button className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300 font-medium">
-            View All Features
+          <button className="px-8 py-3 cursor-pointer bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300 font-medium" onClick={() => redirect('/features')}>
+            View All Features 
           </button>
         </motion.div>
       </div>

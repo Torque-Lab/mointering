@@ -3,7 +3,7 @@ import { Footer } from "./components/landing_page/Footer";
 import { HeroSection } from "./components/landing_page/HeroSection";
 import { FeatureSection } from "./components/landing_page/FeatureSection";
 
-export default function Home() {
+export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="flex-none">

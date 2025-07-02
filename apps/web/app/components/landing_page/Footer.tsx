@@ -10,13 +10,13 @@ export function Footer() {
 
   const footerLinks = {
     product: [
-      { name: 'Features', href: '#features' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'Integrations', href: '#integrations' },
-      { name: 'Updates', href: '#updates' },
+      { name: 'Features', href: '/features' },
+      { name: 'Pricing', href: '/pricing' },
+      { name: 'Integrations', href: '/integrations' },
+      { name: 'Updates', href: '/updates' },
     ],
     company: [
-      { name: 'About Us', href: '#about' },
+      { name: 'About Us', href: '/about' },
       { name: 'Careers', href: '#careers' },
       { name: 'Blog', href: '#blog' },
       { name: 'Press', href: '#press' },
