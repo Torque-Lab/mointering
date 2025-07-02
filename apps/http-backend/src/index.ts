@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { prismaClient } from "@repo/db/prisma";
-import { pushManyToQueue } from "@repo/backend-common/rabbit";
+import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common/rabbit";
 import { redisService } from "../services/redis.service";
 import authRouter from "../routes/auth.routes";
 import addServiceRouter from "../routes/add_service.route";
 import metricRouter from "../routes/metric.routes";
 import websiteRouter from "../routes/website.routes";
 import cookieParser from "cookie-parser";
+import { sendEmail } from "../utils/sendOtp";
 
 const app = express();
 app.use(express.json());
@@ -72,7 +73,33 @@ async function taskScheduler() {
   run();
 }
 
-// taskScheduler();
+
+async function start_alerts() {
+  consumeFromQueueForAlerts("alerts", sendEmailAlert);
+}
+
+async function sendEmailAlert(url: string, id: string) {
+  try {
+    const website = await prismaClient.website.findUnique({
+      where: { id },
+    });
+    if (!website) {
+      console.log(`Website with id ${id} not found.`);
+      return false;
+    }
+    const { email,serviceName } = website;
+    if (!email) {
+      console.log(`No email found for website with id ${id}.`);
+      return false;
+    }
+      sendEmail(email, serviceName);
+    console.log(`Email sent to ${email} for website ${url}.`);
+    return true;
+  } catch (error) {
+    console.error(`Error sending email for website ${url}:`, error);
+    return false;
+  }
+} 
 
 
 async function startServer() {
@@ -103,3 +130,5 @@ process.on('SIGTERM', async () => {
 
 
 startServer();
+taskScheduler();
+start_alerts();

@@ -1,4 +1,4 @@
-import { consumeFromQueue } from "@repo/backend-common/rabbit"
+import { consumeFromQueue, pushToQueue, consumeFromQueueForAlerts } from "@repo/backend-common/rabbit"
 import { prismaClient } from "@repo/db/prisma"
 import axios from "axios"
 const BATCH_SIZE = 100; 
@@ -67,6 +67,10 @@ async function poller(url: string, id: string) {
         
         const status = response.status === 200 ? "Up" : 
                       (response.status === 500 ? "Down" : "Unknown");
+        
+        if(status === "Down"){
+           await pushToQueue("alerts", { url, id });
+        }
 
         batch.push({
             website_id: id,
@@ -109,7 +113,7 @@ process.on('SIGTERM', async () => {
 });
 
 async function start_task() {
-    consumeFromQueue("task_Q", poller);
-}
+    await consumeFromQueue("task_Q", poller);
+            }
 
 start_task();

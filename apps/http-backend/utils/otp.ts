@@ -8,8 +8,6 @@ type TokenData = {
     token: string;
 };
 
-
-// Helper function to get Redis client with error handling
 const getRedisClient = () => {
     try {
         return redisService.getClient();
@@ -26,8 +24,11 @@ export function generateOTP(length: number = 6): string {
 export async function storeOTP(email: string, otp: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `otp:${email}`;
-        const client = getRedisClient();
-        const result = await client.setEx(key, ttlInMinutes * 60, JSON.stringify({ otp }));
+        const client = redisService.getClient();
+        const result = await client.set(key, JSON.stringify({ otp }), {
+            expiration: { type: 'EX', value: ttlInMinutes * 60 },
+            NX: true
+        });
         return result === 'OK';
     } catch (error) {
         console.error('Error storing OTP in Redis:', error);
@@ -67,8 +68,10 @@ export async function isOTPValid(email: string, otp: string): Promise<boolean> {
 export async function storeToken(token: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `token:${token}`;
-        const client = getRedisClient();
-        const result = await client.setEx(key, ttlInMinutes * 60, JSON.stringify({ token }));
+        const client = redisService.getClient();
+        const result = await client.set(key, JSON.stringify({ token }), {
+            expiration: { type: 'EX', value: ttlInMinutes * 60 },
+        });
         return result === 'OK';
     } catch (error) {
         console.error('Error storing token in Redis:', error);
@@ -81,7 +84,7 @@ export async function storeToken(token: string, ttlInMinutes = 15): Promise<bool
 export async function getToken(token: string): Promise<TokenData | null> {
     try {
         const key = `token:${token}`;
-        const client = getRedisClient();
+        const client = redisService.getClient();
         const data = await client.get(key);
         return data ? JSON.parse(data) : null;
     } catch (error) {
@@ -106,8 +109,10 @@ export async function isTokenValid(token: string): Promise<boolean> {
 
 export async function SetKeyValue(key:string,value:number,ttlInMinutes = 24):Promise<boolean>{
     try {
-        const client = getRedisClient();
-        const result = await client.setEx(key, ttlInMinutes * 60 * 60, JSON.stringify(value));
+        const client = redisService.getClient();
+        const result = await client.set(key, JSON.stringify(value),{
+            expiration: { type: 'EX', value: ttlInMinutes * 60*60 },
+        });
         return result === 'OK';
     } catch (error) {
         console.error('Error storing key-value pair in Redis:', error);
@@ -117,7 +122,7 @@ export async function SetKeyValue(key:string,value:number,ttlInMinutes = 24):Pro
 
 export async function GetKeyValue(key:string):Promise<number | null>{
     try {
-        const client = getRedisClient();
+        const client = redisService.getClient();
         const data = await client.get(key);
         return data ? JSON.parse(data) : null;
     } catch (error) {
@@ -128,7 +133,7 @@ export async function GetKeyValue(key:string):Promise<number | null>{
 
 export async function DeleteKey(key:string):Promise<boolean>{
     try {
-        const client = getRedisClient();
+        const client = redisService.getClient();
         const result = await client.del(key);
         return result === 1;
     } catch (error) {
@@ -139,13 +144,15 @@ export async function DeleteKey(key:string):Promise<boolean>{
 
 export async function IncreaseValueOfKey(key:string,ttlInMinutes = 24):Promise<number | null>{
     try {
-        const client = getRedisClient();
-        const exists = await client.exists(key);
-        if (exists) {
+        const client = redisService.getClient();
+            const exist = await client.exists(key);
+        if(exist){
             const result = await client.incr(key);
             return result;
         }
-        const result = await client.setEx(key, ttlInMinutes * 60 * 60, '1');
+        const result = await client.set(key, JSON.stringify(1),{
+            expiration: { type: 'EX', value: ttlInMinutes * 60*60 },
+        });
         return result === 'OK' ? 1 : null;
     } catch (error) {
         console.error('Error increasing key-value pair from Redis:', error);

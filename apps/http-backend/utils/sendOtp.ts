@@ -23,6 +23,22 @@ export async function sendOTPEmail(to: string, otp: string) {
     return false;
   }
 }
+export function sendEmail(to: string, serviceName: string) {
+  try {
+    const response = resend.emails.send({
+      from: "sitewatch<noreply@suvidhaportal.com>",
+      to: to,
+      subject: "Service Alert ",
+     html: `<h2>Service Alert developer</h2>
+     <p>The service ${serviceName} is down.</p>`
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    return false;
+  }
+}
+
 
 export async function sendPasswordResetEmail(to: string, link: string) {
   try {
