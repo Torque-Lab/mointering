@@ -1,19 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker-deployment
+  name: {{ .Chart.Name }}-deployment
+  labels:
+    app: {{ .Chart.Name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: {{ .Values.worker-backend.replicasCount }}
   selector:
     matchLabels:
-      app: worker
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: worker
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: worker
-          image: {{ .Values.worker-backend.image.repository }}:{{ .Values.worker-backend.image.tag }}
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.worker-backend.image.repository }}:{{ .Values.worker-backend.image.tag | default .Chart.AppVersion | quote }}
+          imagePullPolicy: {{ .Values.worker-backend.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.worker-backend.ports.containerPort }}
+            - name: http
+              containerPort: {{ .Values.worker-backend.ports.containerPort }}
+          resources:
+            {{- toYaml .Values.worker-backend.resources | nindent 12 }}
+          env:
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: global-secrets
+                  key: RABBITMQ_URL
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: global-secrets
+                  key: NODE_ENV
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: global-secrets
+                  key: DATABASE_URL

@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-deployment
+  name: {{ .Chart.Name }}-deployment
 spec:
   replicas: {{ .Values.redis.replicasCount }}
   selector:
     matchLabels:
-      app: redis
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: redis
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: redis
+        - name: {{ .Chart.Name }}
           image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
           ports:
             - containerPort: {{ .Values.redis.ports.containerPort }}

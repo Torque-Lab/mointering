@@ -10,7 +10,7 @@ async function getRabbitMQChannel() {
     }
 
     try {
-        connection = await amqp.connect("amqp://localhost:5672");
+        connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost:5672");
         
        
         connection.on("error", (err) => {

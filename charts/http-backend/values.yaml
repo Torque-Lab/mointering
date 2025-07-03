@@ -1,11 +1,23 @@
-http-backend:
+express:
   replicasCount: 2
   image:
     repository: ""
     tag: "latest"
     pullPolicy: "IfNotPresent"
+    pullSecret: "regcred"
   ports:
-     - port: 3001
-     - name: http
-     - containerPort: 3001
-    
+    - name: http
+      containerPort: 3001
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70

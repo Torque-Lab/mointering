@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq-deployment
+  name: {{ .Chart.Name }}-deployment
 spec:
   replicas: {{ .Values.rabbitmq.replicasCount }}
   selector:
     matchLabels:
-      app: rabbitmq
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: rabbitmq
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: rabbitmq
+        - name: {{ .Chart.Name }}
           image: {{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}
           ports:
             - containerPort: {{ .Values.rabbitmq.ports.containerPort }}
