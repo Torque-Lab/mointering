@@ -1,11 +1,11 @@
-nextjs:
+redis:
   replicasCount: 1
   image:
     repository: ""
     tag: "latest"
     pullPolicy: "IfNotPresent"
   ports:
-     - port: 80
+     - port: 6379
      - name: http
-     - containerPort: 3000  
-    
+     - containerPort: 6379  
+  

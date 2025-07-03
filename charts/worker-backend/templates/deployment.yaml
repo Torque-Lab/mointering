@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: {{ .Values.worker-backend.replicasCount }}
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: {{ .Values.worker-backend.image.repository }}:{{ .Values.worker-backend.image.tag }}
+          ports:
+            - containerPort: {{ .Values.worker-backend.ports.containerPort }}

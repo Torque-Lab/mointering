@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-service
+spec:
+  selector:
+    app: express
+  ports:
+    - protocol: TCP
+      port: {{ .Values.http-backend.ports.port }}
+      targetPort: {{ .Values.http-backend.ports.containerPort }}

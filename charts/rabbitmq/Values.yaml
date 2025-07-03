@@ -1,0 +1,11 @@
+rabbitmq:
+  replicasCount: 1
+  image:
+    repository: ""
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
+  ports:
+     - port: 5672
+     - name: http
+     - containerPort: 5672  
+  

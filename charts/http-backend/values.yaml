@@ -1,0 +1,11 @@
+http-backend:
+  replicasCount: 2
+  image:
+    repository: ""
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
+  ports:
+     - port: 3001
+     - name: http
+     - containerPort: 3001
+    
