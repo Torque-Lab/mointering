@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  replicas: {{ .Values.worker-backend.replicasCount }}
+  replicas: {{ .Values.worker.replicasCount }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -18,13 +18,13 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ .Values.worker-backend.image.repository }}:{{ .Values.worker-backend.image.tag | default .Chart.AppVersion | quote }}
-          imagePullPolicy: {{ .Values.worker-backend.image.pullPolicy }}
+          image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag | default .Chart.AppVersion | quote }}
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.worker-backend.ports.containerPort }}
+              containerPort: {{ .Values.worker.ports.containerPort }}
           resources:
-            {{- toYaml .Values.worker-backend.resources | nindent 12 }}
+            {{- toYaml .Values.worker.resources | nindent 12 }}
           env:
             - name: RABBITMQ_URL
               valueFrom:

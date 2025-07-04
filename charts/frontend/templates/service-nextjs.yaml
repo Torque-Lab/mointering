@@ -9,3 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.nextjs.ports.port }}
       targetPort: {{ .Values.nextjs.ports.containerPort }}
+type: ClusterIP

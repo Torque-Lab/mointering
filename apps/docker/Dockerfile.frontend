@@ -2,15 +2,14 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY . .
+RUN npm install -g pnpm
 RUN pnpm install 
 
 FROM node:22-alpine AS builder
 WORKDIR /app
-
 COPY --from=deps /app /app
 
-RUN pnpm turbo run build --filter=./apps/http-backend
-
+RUN pnpm turbo run build --filter=./apps/web
 
 FROM node:22-alpine AS runner
 WORKDIR /app

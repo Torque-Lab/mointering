@@ -9,3 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.redis.ports.port }}
       targetPort: {{ .Values.redis.ports.containerPort }}
+  type: ClusterIP

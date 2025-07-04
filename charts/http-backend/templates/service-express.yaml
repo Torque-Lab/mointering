@@ -9,3 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.http-backend.ports.port }}
       targetPort: {{ .Values.http-backend.ports.containerPort }}
+  type: ClusterIP

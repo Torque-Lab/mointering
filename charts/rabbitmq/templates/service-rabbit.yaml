@@ -9,3 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.rabbitmq.ports.port }}
       targetPort: {{ .Values.rabbitmq.ports.containerPort }}
+  type: ClusterIP

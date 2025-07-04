@@ -1,0 +1,21 @@
+
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY . .
+RUN npm install -g pnpm
+RUN pnpm install 
+
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app /app
+
+RUN pnpm turbo run build --filter=./apps/http-backend
+ARG DATABASE_URL
+RUN npx --workspace=packages/db prisma migrate deploy
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app /app
+EXPOSE 3000
+
+CMD ["pnpm", "run", "start"]

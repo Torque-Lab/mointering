@@ -1,0 +1,45 @@
+name: Build and Deploy Frontend
+
+on:
+  push:
+    paths:
+      - 'apps/frontend/**'
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile.frontend
+          push: true
+          tags: ring0exec/frontend:${{ github.sha }}
+
+      - name: Clone gitops repo, update, and push
+        env:
+          PAT: ${{ secrets.GITOPS_TOKEN }}
+        run: |
+          git clone https://github.com/Torque-Lab/mointering-gitops.git
+          cd mointering-gitops
+          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/frontend/frontend.yml
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add apps/frontend/frontend.yml
+          git commit -m "Update frontend image to ${{ github.sha }}"
+          git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
