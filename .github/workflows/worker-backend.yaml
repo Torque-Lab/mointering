@@ -1,9 +1,7 @@
 name: Build and Deploy Worker Backend
 
 on:
-  push:
-    paths:
-      - 'apps/worker-backend/**'
+  push:    
     branches:
       - main
 jobs:

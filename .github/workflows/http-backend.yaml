@@ -2,8 +2,6 @@ name: Build and Deploy Backend
 
 on:
   push:
-    paths:
-      - 'apps/http-backend/**'
     branches:
       - main
 jobs:

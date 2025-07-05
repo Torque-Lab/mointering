@@ -2,8 +2,6 @@ name: Build and Deploy Frontend
 
 on:
   push:
-    paths:
-      - 'apps/frontend/**'
     branches:
       - main
 
