@@ -10,9 +10,9 @@ RUN pnpm install
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app /app
+RUN npx prisma generate --schema=./packages/db/prisma/schema.prisma
 RUN pnpm turbo run build --filter=./apps/http-backend
 ARG DATABASE_URL
-RUN npx prisma generate --schema=./packages/db/prisma/schema.prisma
 RUN npx --workspace=packages/db prisma migrate deploy
 
 FROM base AS runner
