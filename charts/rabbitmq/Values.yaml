@@ -8,4 +8,12 @@ rabbitmq:
      - port: 5672
      - name: http
      - containerPort: 5672  
+  syncWave: "-24"
   
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"

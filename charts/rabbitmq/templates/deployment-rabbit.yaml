@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-deployment
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.rabbitmq.syncWave | default "-24" | quote }}
 spec:
   replicas: {{ .Values.rabbitmq.replicasCount }}
   selector:
@@ -17,3 +19,5 @@ spec:
           image: {{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}
           ports:
             - containerPort: {{ .Values.rabbitmq.ports.containerPort }}
+          resources:
+            {{- toYaml .Values.rabbitmq.resources | nindent 12 }}

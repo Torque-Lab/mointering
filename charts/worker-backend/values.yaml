@@ -1,9 +1,10 @@
 worker:
   replicasCount: 1
   image:
-    repository: ""
+    repository: "ring0exec/worker-backend"
     tag: "latest"
     pullPolicy: "IfNotPresent"
+    pullSecret: "regcred"
   ports:
     - name: http
       port: 3002
@@ -11,13 +12,13 @@ worker:
   resources:
     requests:
       cpu: "200m"
-      memory: "512Mi"
+      memory: "256Mi"
     limits:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "500m"
+      memory: "1Gi"
   autoscaling:
     enabled: true
     minReplicas: 1
-    maxReplicas: 5
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 70
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90

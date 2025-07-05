@@ -36,15 +36,4 @@ spec:
                   name: global-secrets
                   key: NEXT_PUBLIC_URL
                   namespace: backend
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
+  

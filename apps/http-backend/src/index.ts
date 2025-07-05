@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import { prismaClient } from "@repo/db/prisma";
 import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common/rabbit";
 import { redisService } from "../services/redis.service";
@@ -17,36 +16,14 @@ if(!isDev){
   app.set("trust proxy", 1);
 }
 app.use(cookieParser());
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
 
 app.use("/api/auth", authRouter);
 app.use("/api/add-service", addServiceRouter);
 app.use("/api", metricRouter);
 app.use("/api", websiteRouter);
 
-app.get("/status", async (req, res) => {
-  const websiteId = req.query.websiteId as string
-  const status = await prismaClient.websiteTick.findFirst({
-    where: {
-      id: websiteId
-    }
-  })
-
-  res.json({
-    status: status?.status
-  })
-
-});
-
-
-app.get('/api/test', async (req, res) => {
-  console.log("Hello from the server!")
-  res.status(200).json({ message: "Hello from the server!" })
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ message: "Server is running" });
 })
 
 
@@ -72,12 +49,9 @@ async function taskScheduler() {
 
   run();
 }
-
-
 async function start_alerts() {
   consumeFromQueueForAlerts("alerts", sendEmailAlert);
 }
-
 async function sendEmailAlert(url: string, id: string) {
   try {
     const website = await prismaClient.website.findUnique({
@@ -100,7 +74,6 @@ async function sendEmailAlert(url: string, id: string) {
     return false;
   }
 } 
-
 
 async function startServer() {
   try {

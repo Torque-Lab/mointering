@@ -1,7 +1,7 @@
 express:
-  replicasCount: 2
+  replicasCount: 1
   image:
-    repository: ""
+    repository: "ring0exec/http-backend"
     tag: "latest"
     pullPolicy: "IfNotPresent"
     pullSecret: "regcred"
@@ -10,14 +10,14 @@ express:
       containerPort: 3001
   resources:
     requests:
-      cpu: "200m"
-      memory: "512Mi"
+      cpu: "100m"
+      memory: "256Mi"
     limits:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "250m"
+      memory: "1Gi"
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 70
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
