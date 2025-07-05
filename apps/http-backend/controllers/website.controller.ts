@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prismaClient } from "@repo/db/prisma";
+import { websiteStatus} from "@repo/db/prisma";
+import { WebsiteTick } from "../../../packages/db/generated/prisma";
 
 export const getWebsites = async (req: Request, res: Response) => {
   const userId=req.user!
@@ -8,14 +10,10 @@ export const getWebsites = async (req: Request, res: Response) => {
       where:{
         user_id:userId
       },
-      include: {
-        ticks: {
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
-        },
+      include:{
+        ticks:true
       },
+      take:1
     });
     const calculateUptime = async (websiteId: string) => {
       const twentyFourHoursAgo = new Date();
@@ -23,7 +21,7 @@ export const getWebsites = async (req: Request, res: Response) => {
 
       const result = await prismaClient.$queryRaw<{up: number, total: number}[]>`
         SELECT 
-          COUNT(CASE WHEN status = 'Up' THEN 1 END)::int as up,
+          COUNT(CASE WHEN status = ${websiteStatus.Up} THEN 1 END)::int as up,
           COUNT(*)::int as total
         FROM "website_tick"
         WHERE website_id = ${websiteId}
@@ -33,19 +31,26 @@ export const getWebsites = async (req: Request, res: Response) => {
       const { up = 0, total = 0 } = result[0] || {};
       return total > 0 ? (up / total * 100).toFixed(1) + '%' : '100%';
     };
+    interface Website {
+      id: string;
+      serviceName: string;
+      url: string;
+      ticks: WebsiteTick[];
+      createdAt: Date;
+    }   
 
-    const formattedWebsites = await Promise.all(websites.map(async (website) => ({
+    const formattedWebsites = await Promise.all(websites.map(async (website:Website) => ({
       id: website.id,
       name: website.serviceName || 'Unnamed Service',
       url: website.url,
-      status: website.ticks[0]?.status === 'Up' ? 'Online' : 'Offline',
+      status: website.ticks[0]?.status === websiteStatus.Up ? 'Online' : 'Offline',
       uptime: await calculateUptime(website.id),
       responseTime: `${website.ticks[0]?.response_time_ms || 0}ms`,
       lastCheck: formatTimeAgo(website.ticks[0]?.createdAt || website.createdAt),
     })));
 
     if (formattedWebsites.length === 0) {
-      return res.json(getDummyData());
+      return res.status(200).json(getDummyData());
     }
 
     res.status(200).json(formattedWebsites);

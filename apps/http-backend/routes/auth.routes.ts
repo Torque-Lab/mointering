@@ -3,6 +3,8 @@ import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware";
 import { signIn, signUp,refresh,logout,getProfile } from "../controllers/auth.controller";
 import { genricRateLimiter } from "../middleware/rateLimit.genric";
+
+
 const router:Router = Router();
 
 router.post("/sign-up",genricRateLimiter(15,100),signUp);

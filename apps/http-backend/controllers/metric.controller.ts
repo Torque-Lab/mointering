@@ -29,7 +29,7 @@ export const getMetrics = async (req: Request, res: Response) => {
       ORDER BY "createdAt" ASC
     `;
 
-    const response = metrics.map(tick => ({
+    const response = metrics.map((tick:WebsiteTick) => ({
       status: tick.status,
       timestamp: tick.createdAt.toISOString(),
       duration: tick.status === 'Up' ? 0 : tick.response_time_ms 
@@ -57,7 +57,7 @@ export const getMetrics = async (req: Request, res: Response) => {
       { status: 'Down', timestamp: '2025-06-24T12:19:00Z', duration: 90 },
     ];
 
-    res.json(res2);
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching metrics:', error);
     res.status(500).json({ error: 'Failed to fetch metrics' });
@@ -92,7 +92,7 @@ export const getUptimeSummary = async (req: Request, res: Response) => {
       calculateUptime(last30d)
     ]);
 
-    res.json({
+    res.status(200).json({
       last24h: uptime24h,
       last7d: uptime7d,
       last30d: uptime30d,
