@@ -27,8 +27,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./docker/Dockerfile.worker-backend
           push: true
           tags: ring0exec/worker-backend:${{ github.sha }}
 
