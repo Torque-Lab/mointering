@@ -11,21 +11,16 @@ export default function ResetPasswordPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Extract token from URL
         const searchParams = new URLSearchParams(window.location.search);
         const oneTimeToken = searchParams.get('oneTimeToken');
         
         if (oneTimeToken) {
-            // Store token in session storage
             sessionStorage.setItem('resetToken', oneTimeToken);
-            
-            // Remove token from URL without page reload
             const newUrl = window.location.pathname;
             window.history.replaceState({}, '', newUrl);
             
             setToken(oneTimeToken);
         } else {
-            // Check if token exists in session storage
             const storedToken = sessionStorage.getItem('resetToken');
             if (storedToken) {
                 setToken(storedToken);
@@ -65,7 +60,6 @@ export default function ResetPasswordPage() {
             }
             
             alert('Your password has been reset successfully!');
-            // Redirect to login or home page
             router.push('/login');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
