@@ -4,13 +4,8 @@
   "main": "rabbit.ts",
   "exports": {
     "./rabbit": "./dist/src/rabbit.js"
-  },
-  "types": "./dist/src/rabbit.d.ts",
-  "typesVersions": {
-    "*": {
-      "./rabbit": ["./dist/src/rabbit.d.ts"]
-    }
-  },
+  }
+,
   "scripts": {
     "build": "tsc -b",
     "test": "echo \"Error: no test specified\" && exit 1"
