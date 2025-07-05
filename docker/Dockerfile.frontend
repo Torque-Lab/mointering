@@ -10,10 +10,12 @@ RUN pnpm install
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app /app
+RUN npm install -g pnpm
 RUN pnpm turbo run build --filter=./apps/frontend
 
 FROM base AS runner
 WORKDIR /app
+RUN npm install -g pnpm
 COPY --from=builder /app /app
 EXPOSE 3000
 CMD ["pnpm", "run", "start"]
