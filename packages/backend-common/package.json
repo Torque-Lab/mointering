@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "main": "rabbit.ts",
   "exports": {
-    "./rabbit": "./src/rabbit.ts"
+    "./rabbit": "./dist/src/rabbit.js"
+  },
+  "types": "./dist/src/rabbit.d.ts",
+  "typesVersions": {
+    "*": {
+      "./rabbit": ["./dist/src/rabbit.d.ts"]
+    }
   },
   "scripts": {
     "build": "tsc -b",
