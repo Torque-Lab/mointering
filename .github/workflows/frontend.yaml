@@ -6,9 +6,6 @@ on:
       - 'apps/frontend/**'
     branches:
       - main
-env:
-  ACTIONS_STEP_DEBUG: true
-  
 
 jobs:
   build:
