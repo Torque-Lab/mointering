@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-deployment
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .Values.rabbitmq.syncWave | default "-24" | quote }}
+    argocd.argoproj.io/sync-wave: "-24"
 spec:
   replicas: {{ .Values.rabbitmq.replicasCount }}
   selector:
