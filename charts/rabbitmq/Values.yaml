@@ -1,19 +1,19 @@
 rabbitmq:
-  replicasCount: 1
-  image:
-    repository: rabbitmq
-    tag: latest
-    pullPolicy: IfNotPresent
-  ports:
-    name: amqp
-    port: 5672
-    containerPort: 5672
-  syncWave: "-24"
+    replicasCount: 1
+    image:
+        repository: rabbitmq
+        tag: latest
+        pullPolicy: IfNotPresent
+    ports:
+        name: amqp
+        port: 5672
+        containerPort: 5672
+    syncWave: "-24"
 
-  resources:
-    requests:
-      cpu: "200m"
-      memory: "512Mi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
+    resources:
+        requests:
+            cpu: "200m"
+            memory: "512Mi"
+        limits:
+            cpu: "1000m"
+            memory: "2Gi"

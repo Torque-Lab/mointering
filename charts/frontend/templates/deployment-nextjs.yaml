@@ -19,7 +19,7 @@ spec:
           image: {{ .Values.nextjs.image.repository }}:{{ .Values.nextjs.image.tag | default .Chart.AppVersion | quote }}
           imagePullPolicy: {{ .Values.nextjs.image.pullPolicy }}
           ports:
-            - name: http
+            - name: {{ .Values.nextjs.ports.name }}
               containerPort: {{ .Values.nextjs.ports.containerPort }}
           resources:
             {{- toYaml .Values.nextjs.resources | nindent 12 }}

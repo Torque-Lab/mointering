@@ -39,11 +39,13 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
-          sed -i '/name: image.tag/{n;s/value:.*/value: '"${{ github.sha }}"'/}' apps/backend/worker-backend.yaml
+          ls apps/backend/update_images/
+          cat apps/backend/update_images/worker-values.yaml
+          sed -i "/worker:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/backend/update_images/worker-values.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git diff --quiet || { 
-            git add apps/backend/worker-backend.yaml
-            git commit -m "Update worker-backend image to ${{ github.sha }}"
+            git add apps/backend/update_images/worker-values.yaml
+            git commit -m "Update worker image to ${{ github.sha }}"
             git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
           }   
