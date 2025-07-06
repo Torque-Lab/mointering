@@ -18,6 +18,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}
           ports:
-            - containerPort: {{ .Values.rabbitmq.ports[2].containerPort }}
+            - containerPort: {{ index .Values.rabbitmq.ports 2 }}
           resources:
             {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
