@@ -1,12 +1,11 @@
 rabbitmq:
   replicasCount: 1
   image:
-    repository: ""
-    tag: "latest"
-    pullPolicy: "IfNotPresent"
+    repository: rabbitmq
+    pullPolicy: IfNotPresent
   ports:
     port: 5672
-    name: http
+    name: amqp
     containerPort: 5672  
   syncWave: "-24"
   
