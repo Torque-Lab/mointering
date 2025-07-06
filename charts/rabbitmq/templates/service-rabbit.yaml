@@ -7,7 +7,7 @@ spec:
     app: {{ .Chart.Name }}
   ports:
     - protocol: TCP
-      name: {{ index .Values.rabbitmq.ports 1 }}
-      port: {{ index .Values.rabbitmq.ports 0 }}
-      targetPort: {{ index .Values.rabbitmq.ports 2 }}
+      name: {{ .Values.rabbitmq.ports.name }}
+      port: {{ .Values.rabbitmq.ports.port }}
+      targetPort: {{ .Values.rabbitmq.ports.containerPort }}
   type: ClusterIP

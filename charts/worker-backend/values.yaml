@@ -6,9 +6,9 @@ worker:
     pullPolicy: "IfNotPresent"
     pullSecret: "regcred"
   ports:
-    - name: http
-    - port: 3002
-    - containerPort: 3002
+    name: http
+    port: 3002
+    containerPort: 3002
   resources:
     requests:
       cpu: "200m"

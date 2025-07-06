@@ -5,9 +5,9 @@ nextjs:
     tag: "latest"
     pullPolicy: "IfNotPresent"
   ports:
-    - name: http
-    - port: 3000
-    - containerPort: 3000
+    name: http
+    port: 3000
+    containerPort: 3000
   resources:
     requests:
       cpu: "100m"

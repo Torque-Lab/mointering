@@ -7,8 +7,7 @@ spec:
     app: express
   ports:
     - protocol: TCP
-      name: {{ .Values.express.ports[0].name }}
-      port: {{ .Values.express.ports[1].port }}
-      targetPort: {{ .Values.express.ports[2].containerPort }}
+      name: {{ .Values.express.ports.name }}
+      port: {{ .Values.express.ports.port }}
+      targetPort: {{ .Values.express.ports.containerPort }}
   type: ClusterIP
-
