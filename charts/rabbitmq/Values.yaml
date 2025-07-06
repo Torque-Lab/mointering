@@ -5,9 +5,9 @@ rabbitmq:
     tag: "latest"
     pullPolicy: "IfNotPresent"
   ports:
-     - port: 5672
-     - name: http
-     - containerPort: 5672  
+    port: 5672
+    name: http
+    containerPort: 5672  
   syncWave: "-24"
   
   resources:

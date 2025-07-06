@@ -6,6 +6,7 @@ nextjs:
     pullPolicy: "IfNotPresent"
   ports:
     - name: http
+      port: 3000
       containerPort: 3000
   resources:
     requests:

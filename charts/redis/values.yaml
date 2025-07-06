@@ -5,7 +5,6 @@ redis:
     tag: "latest"
     pullPolicy: "IfNotPresent"
   ports:
-     - port: 6379
-     - name: http
-     - containerPort: 6379  
+    port: 6379
+    containerPort: 6379
   syncWave: "-25"
