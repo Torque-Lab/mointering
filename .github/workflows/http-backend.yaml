@@ -37,6 +37,8 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
+          ls apps/backend/
+          cat apps/backend/http-backend.yml
           sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/backend/http-backend.yml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
