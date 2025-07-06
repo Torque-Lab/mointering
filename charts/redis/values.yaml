@@ -2,6 +2,7 @@ redis:
   replicasCount: 1
   image:
     repository: redis
+    tag: "latest"
     pullPolicy: IfNotPresent
   ports:
     port: 6379

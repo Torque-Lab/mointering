@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.nextjs.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.nextjs.ports.containerPort }}
+              containerPort: {{ .Values.nextjs.ports[1].containerPort }}
           resources:
             {{- toYaml .Values.nextjs.resources | nindent 12 }}
           env:

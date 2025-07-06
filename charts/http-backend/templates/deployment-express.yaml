@@ -24,7 +24,7 @@ spec:
             - name: {{ .Values.express.image.pullSecret }}
           ports:
             - name: http
-              containerPort: {{ .Values.express.ports.containerPort }}
+              containerPort: {{ .Values.express.ports[1].containerPort }}
           resources:
             {{- toYaml .Values.express.resources | nindent 12 }}
           env:
