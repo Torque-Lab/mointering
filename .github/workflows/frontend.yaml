@@ -3,6 +3,7 @@ name: Build and Deploy Frontend
 on:
   push:
     paths:
+      - .github/workflows/frontend.yaml
       - 'docker/**'
       - 'apps/frontend/**'  
     branches:
@@ -42,9 +43,11 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
-          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/frontend/frontend.yaml
+          sed -i '/name: image.tag/{n;s/value:.*/value: '"${{ github.sha }}"'/}' apps/frontend/frontend.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add apps/frontend/frontend.yaml
-          git commit -m "Update frontend image to ${{ github.sha }}"
-          git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
+          git diff --quiet || {
+            git add apps/frontend/frontend.yaml
+            git commit -m "Update frontend image to ${{ github.sha }}"
+            git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
+          }
