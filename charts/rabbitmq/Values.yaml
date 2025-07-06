@@ -9,7 +9,7 @@ rabbitmq:
     port: 5672
     containerPort: 5672
   syncWave: "-24"
-  
+
   resources:
     requests:
       cpu: "200m"
