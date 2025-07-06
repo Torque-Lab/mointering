@@ -1,10 +1,10 @@
 worker:
   replicasCount: 1
   image:
-    repository: "ring0exec/worker-backend"
-    tag: "latest"
-    pullPolicy: "IfNotPresent"
-    pullSecret: "regcred"
+    repository: ring0exec/worker-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecret: regcred
   ports:
     name: http
     port: 3002

@@ -1,9 +1,10 @@
 nextjs:
   replicasCount: 1
   image:
-    repository: "ring0exec/frontend"
-    tag: "latest"
-    pullPolicy: "IfNotPresent"
+    repository: ring0exec/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecret: regcred
   ports:
     name: http
     port: 3000
