@@ -8,7 +8,6 @@ interface ContentModelProps {
 }
 
 export default function ContentModel({ open, onClose, className = '' }: ContentModelProps) {
-  if (!open) return null;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -31,10 +30,13 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
     setIsSubmitting(true);
     
     try {
-      // TODO: Implement form submission
-      console.log('Form submitted:', formData);
-      // Reset form
-      setFormData({ name: '', url: '', email: '' });
+     await fetch('/api/add-service', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
       onClose();
     } catch (error) {
       console.error('Error submitting form:', error);

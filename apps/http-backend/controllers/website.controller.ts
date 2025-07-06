@@ -7,13 +7,17 @@ export const getWebsites = async (req: Request, res: Response) => {
   const userId=req.user!
   try {
     const websites = await prismaClient.website.findMany({
-      where:{
-        user_id:userId
+      where: {
+        user_id: userId,
       },
-      include:{
-        ticks:true
+      include: {
+        ticks: {
+          take: 1,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
-      take:1
     });
     const calculateUptime = async (websiteId: string) => {
       const twentyFourHoursAgo = new Date();
@@ -39,15 +43,21 @@ export const getWebsites = async (req: Request, res: Response) => {
       createdAt: Date;
     }   
 
-    const formattedWebsites = await Promise.all(websites.map(async (website:Website) => ({
-      id: website.id,
-      name: website.serviceName || 'Unnamed Service',
-      url: website.url,
-      status: website.ticks[0]?.status === websiteStatus.Up ? 'Online' : 'Offline',
-      uptime: await calculateUptime(website.id),
-      responseTime: `${website.ticks[0]?.response_time_ms || 0}ms`,
-      lastCheck: formatTimeAgo(website.ticks[0]?.createdAt || website.createdAt),
-    })));
+    const formattedWebsites = await Promise.all(
+      websites.map(async (website) => {
+        const latestTick = website.ticks[0]; 
+        return {
+          id: website.id,
+          name: website.serviceName || 'Unnamed Service',
+          url: website.url,
+          status: latestTick?.status === websiteStatus.Up ? 'Online' : 'Offline',
+          uptime: await calculateUptime(website.id), 
+          responseTime: `${latestTick?.response_time_ms || 0}ms`,
+          lastCheck: formatTimeAgo(latestTick?.createdAt || website.createdAt),
+        };
+      })
+    );
+    
 
     if (formattedWebsites.length === 0) {
       return res.status(200).json(getDummyData());

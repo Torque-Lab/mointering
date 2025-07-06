@@ -91,7 +91,7 @@ export default function AboutPage() {
               Our mission is to provide powerful, yet simple tools that help you stay ahead of issues before they impact your users.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              Founded in 2023, we've been helping businesses of all sizes maintain their digital presence with confidence.
+              Founded in 2023, &nbsp; we ve been helping businesses of all sizes maintain their digital presence with confidence.
             </p>
           </motion.div>
           

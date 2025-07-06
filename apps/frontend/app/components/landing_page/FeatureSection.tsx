@@ -37,28 +37,7 @@ const features = [
   }
 ];
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    }
-  }
-};
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut'
-    }
-  }
-};
 
 export function FeatureSection() {
   return (
@@ -112,7 +91,7 @@ export function FeatureSection() {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-16 text-center"
         >
-          <p className="text-gray-500 mb-6">And many more features to help you stay on top of your website's health</p>
+          <p className="text-gray-500 mb-6">And many more features to help you stay on top of your website &apos;s health</p>
           <button className="px-8 py-3 cursor-pointer bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300 font-medium" onClick={() => redirect('/features')}>
             View All Features 
           </button>

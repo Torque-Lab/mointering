@@ -8,7 +8,7 @@ import ContentModel from "../ModelToAddWebsite";
 
 export default function WebsiteTable({ initialData }: { initialData: TableRowData[] | null }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tableData, setTableData] = useState<TableRowData[] | null>(initialData);
+  const [tableData, ] = useState<TableRowData[] | null>(initialData);
 
   const handleAddService = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { FeatureSection } from './FeatureSection';
 
 export function HeroSection() {
   return (
@@ -23,7 +22,7 @@ export function HeroSection() {
                     href="/signup"
                     className="w-full inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                   >
-                    Get Started - It's Free
+                    Get Started - It&apos;s Free
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">

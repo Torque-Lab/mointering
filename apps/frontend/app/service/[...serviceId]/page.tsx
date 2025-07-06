@@ -1,23 +1,18 @@
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
-import dynamic from 'next/dynamic';
 import { UptimeData } from "../../types/uptime";
 import UptimeChart from "../../components/UptimeChart"; 
-
 import { NEXT_PUBLIC_URL } from "../../lib/config";
-interface Props {
-  params: {
-    serviceId: string[];
-  };
-  searchParams?: {
-    days?: string;
-  };
+
+interface PageProps {
+  params:Promise<string>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-interface UptimeSummary {
-  last24h: string;
-  last7d: string;
-  last30d: string;
-}
+// interface UptimeSummary {
+//   last24h: string;
+//   last7d: string;
+//   last30d: string;
+// }
 
 async function fetchMetrics(serviceId: string, from: Date, to: Date): Promise<UptimeData[]> {
   const fromISO = from.toISOString();
@@ -38,37 +33,36 @@ await new Promise(resolve => setTimeout(resolve, 2000));
   return res.json();
 }
 
-async function fetchUptimeSummary(serviceId: string): Promise<UptimeSummary> {
-  const res = await fetch(
-    `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}/uptime-summary`,
-    { 
-      credentials: 'include',
-      next: { revalidate: 300 } // Revalidate every 5 minutes
-    }
-  );
+// async function fetchUptimeSummary(serviceId: string): Promise<UptimeSummary> {
+//   const res = await fetch(
+//     `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}/uptime-summary`,
+//     { 
+//       credentials: 'include',
+//       next: { revalidate: 300 } // Revalidate every 5 minutes
+//     }
+//   );
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch uptime summary');
-  }
+//   if (!res.ok) {
+//     throw new Error('Failed to fetch uptime summary');
+//   }
 
-  return res.json();
-}
+//   return res.json();
+// }
 
 const getDateRange = (days: number) => ({
   from: subDays(new Date(), days - 1),
   to: new Date(),
 });
 
-export default async function ServicePage({ params, searchParams }: Props) {
-  const serviceId = Array.isArray(params.serviceId) 
-    ? params.serviceId[0] 
-    : await params.serviceId || '';
+export default async function ServicePage({ params, searchParams }: PageProps) {
+  const serviceId = await params || '';
     
   if (!serviceId) {
     throw new Error('Service ID is required');
   }
   
-  const days = await searchParams?.days ? Number(searchParams!.days) : 7;
+  const searchParamsObj = await searchParams;
+  const days = searchParamsObj?.days ? Number(searchParamsObj.days) : 7;
   const dateRange = getDateRange(days);
   
   const [metrics] = await Promise.all([

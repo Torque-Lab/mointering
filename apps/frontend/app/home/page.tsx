@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import WebsiteTable from '../components/dashboard/WebsiteTable';
 import getSessionInServer from '../Providers/session-server';
 import { NEXT_PUBLIC_URL } from '../lib/config';
+import { TableRowData } from "../components/dashboard/Table";
 
 export default async function Home() {
 const token = await getSessionInServer();
@@ -21,6 +22,7 @@ const token = await getSessionInServer();
   );
 }
 
+
 async function getWebsites(token:string) {
   try {
     const response = await fetch(`${NEXT_PUBLIC_URL}/api/websites`, {
@@ -35,7 +37,7 @@ async function getWebsites(token:string) {
     }
    
 
-    return await response.json();
+    return await response.json() as TableRowData[]  ;
   } catch (error) {
     console.error('Error fetching websites:', error);
     return null;

@@ -73,6 +73,7 @@ const endpoint = isLogin ? '/api/auth/sign-in' : '/api/auth/sign-up';
   const handleSocialLogin = (provider: 'google' | 'github') => {
     // TODO: Implement social login logic
     // Redirect to OAuth endpoint or handle social login
+    console.log(`Social login with ${provider}`);
   };
 
   return (

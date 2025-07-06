@@ -5,6 +5,11 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "start:frontend": "cd apps/frontend && pnpm run start",
+    "start:backend": "cd apps/http-backend && pnpm run start",
+    "start:worker": "cd apps/worker-backend && pnpm run start",
+    "generate:db": "cd packages/db && npx prisma generate --schema=./prisma/schema.prisma",
+    "deploy:db": "cd packages/db && npx prisma migrate deploy --schema=./prisma/schema.prisma",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },
