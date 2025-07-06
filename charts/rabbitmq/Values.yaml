@@ -4,9 +4,9 @@ rabbitmq:
     repository: rabbitmq
     pullPolicy: IfNotPresent
   ports:
-    port: 5672
-    name: amqp
-    containerPort: 5672  
+    - port: 5672
+    - name: amqp
+    - containerPort: 5672  
   syncWave: "-24"
   
   resources:
