@@ -44,11 +44,11 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
-          sed -i "/frontend:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/update_images/frontend-values.yaml
+          sed -i "/frontend:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/updated_images/frontend-values.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git diff --quiet || {
-            git add apps/update_images/frontend-values.yaml
+            git add apps/updated_images/frontend-values.yaml
             git commit -m "Update frontend image to ${{ github.sha }}"
             git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
           }
