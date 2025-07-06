@@ -42,15 +42,15 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
-          ls apps/backend/updated_images/
-          cat apps/backend/updated_images/express-values.yaml
-          sed -i "/express:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/backend/updated_images/express-values.yaml
+          ls apps/charts/http-backend/
+          cat apps/charts/http-backend/values.yaml
+          sed -i "/express:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/charts/http-backend/values.yaml
         
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
             git diff --quiet || {
-            git add apps/backend/updated_images/express-values.yaml
+            git add apps/charts/http-backend/values.yaml
             git commit -m "Update http-backend image to ${{ github.sha }}"
             git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
           }
