@@ -1,7 +1,10 @@
 name: Build and Deploy Worker Backend
 
 on:
-  push:    
+  push:
+    paths:
+      - 'docker/**'
+      - 'apps/backend/worker-backend/**'
     branches:
       - main
 jobs:
@@ -35,9 +38,9 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
-          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/backend/worker-backend.yml
+          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/backend/worker-backend.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add apps/backend/worker-backend.yml
+          git add apps/backend/worker-backend.yaml
           git commit -m "Update worker-backend image to ${{ github.sha }}"
           git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main

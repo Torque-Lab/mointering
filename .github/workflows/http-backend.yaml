@@ -2,6 +2,9 @@ name: Build and Deploy Backend
 
 on:
   push:
+    paths:
+      - 'docker/**'
+      - 'apps/backend/http-backend/**'
     branches:
       - main
 jobs:
@@ -38,10 +41,10 @@ jobs:
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
           ls apps/backend/
-          cat apps/backend/http-backend.yml
-          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/backend/http-backend.yml
+          cat apps/backend/http-backend.yaml
+          sed -i "s|\(name: image.tag.*value: \).*|\1${{ github.sha }}|" apps/backend/http-backend.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add apps/backend/http-backend.yml
+          git add apps/backend/http-backend.yaml
           git commit -m "Update http-backend image to ${{ github.sha }}"
           git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
