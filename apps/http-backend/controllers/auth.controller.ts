@@ -143,7 +143,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
             await IncreaseValueOfKey(email,24);
             const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
             storeToken(token);  
-            const link = `http://localhost:3000/reset-password?oneTimeToken=${token}`;
+            const link = `${process.env.NEXT_PUBLIC_URL}/reset-password?oneTimeToken=${token}`;
             sendPasswordResetEmail(email, link);
         }
     

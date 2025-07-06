@@ -68,8 +68,4 @@ spec:
                 secretKeyRef:
                   name: global-secrets
                   key: NEXT_PUBLIC_URL
-            - name: NEXT_PUBLIC_ENV
-              valueFrom:
-                secretKeyRef:
-                  name: global-secrets
-                  key: NEXT_PUBLIC_ENV
+           
