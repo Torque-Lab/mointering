@@ -1,4 +1,4 @@
-{{- if .Values.http-backend.autoscaling.enabled }}
+{{- if .Values.express.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -10,19 +10,19 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ .Chart.Name }}-deployment
-  minReplicas: {{ .Values.http-backend.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.http-backend.autoscaling.maxReplicas }}
+  minReplicas: {{ .Values.express.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.express.autoscaling.maxReplicas }}
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.http-backend.autoscaling.targetCPUUtilizationPercentage }}
+          averageUtilization: {{ .Values.express.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.http-backend.autoscaling.targetMemoryUtilizationPercentage }}
+          averageUtilization: {{ .Values.express.autoscaling.targetMemoryUtilizationPercentage }}
 {{- end }}

@@ -23,8 +23,9 @@ spec:
           imagePullSecrets:
             - name: {{ .Values.express.image.pullSecret }}
           ports:
-            - name: http
-              containerPort: {{ .Values.express.ports[1].containerPort }}
+            - name: {{ .Values.express.ports[0].name }}
+              port: {{ .Values.express.ports[1].port }} 
+              containerPort: {{ .Values.express.ports[2].containerPort }}
           resources:
             {{- toYaml .Values.express.resources | nindent 12 }}
           env:

@@ -8,6 +8,7 @@ spec:
     app: {{ .Chart.Name }}
   ports:
     - protocol: TCP
-      port: {{ .Values.worker.ports[0].port }}
-      targetPort: {{ .Values.worker.ports[1].containerPort }}
+      name: {{ .Values.worker.ports[0].name }}  
+      port: {{ .Values.worker.ports[1].port }}
+      targetPort: {{ .Values.worker.ports[2].containerPort }}
   type: ClusterIP

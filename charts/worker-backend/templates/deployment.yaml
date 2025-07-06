@@ -21,8 +21,9 @@ spec:
           image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag | default .Chart.AppVersion | quote }}
           imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.worker.ports.containerPort }}
+            - name: {{ .Values.worker.ports[0].name }}
+              port: {{ .Values.worker.ports[1].port }}
+              containerPort: {{ .Values.worker.ports[2].containerPort }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
           env:

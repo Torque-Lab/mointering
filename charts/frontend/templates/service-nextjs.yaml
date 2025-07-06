@@ -7,6 +7,7 @@ spec:
     app: nextjs
   ports:
     - protocol: TCP
-      port: {{ .Values.nextjs.ports[0].port }}
-      targetPort: {{ .Values.nextjs.ports[1].containerPort }}
+      name: {{ .Values.nextjs.ports[0].name }}
+      port: {{ .Values.nextjs.ports[1].port }}
+      targetPort: {{ .Values.nextjs.ports[2].containerPort }}
 type: ClusterIP
