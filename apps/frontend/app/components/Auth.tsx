@@ -10,7 +10,6 @@ interface AuthProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
-
 export default function Auth({ isLogin , onSuccess, onError }: AuthProps) {
   const [formData, setFormData] = useState({
     firstName: '',
