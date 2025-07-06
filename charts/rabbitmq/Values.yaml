@@ -2,6 +2,7 @@ rabbitmq:
   replicasCount: 1
   image:
     repository: rabbitmq
+    tag: "latest"
     pullPolicy: IfNotPresent
   ports:
     name: amqp
