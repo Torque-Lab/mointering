@@ -48,7 +48,7 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git diff --quiet || {
-            git add apps/updated_images/frontend-values.yaml
+            git add apps/frontend/updated_images/frontend-values.yaml
             git commit -m "Update frontend image to ${{ github.sha }}"
             git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
           }
