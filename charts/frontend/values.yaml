@@ -3,7 +3,7 @@ nextjs:
     image:
         repository: ring0exec/frontend
         tag: latest
-        pullPolicy: IfNotPresent
+        pullPolicy: Always
         pullSecret: regcred
     ports:
         name: http

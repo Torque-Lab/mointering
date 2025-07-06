@@ -3,7 +3,8 @@ rabbitmq:
     image:
         repository: rabbitmq
         tag: latest
-        pullPolicy: IfNotPresent
+        pullPolicy: Always
+        
     ports:
         name: amqp
         port: 5672

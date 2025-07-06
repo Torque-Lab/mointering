@@ -3,7 +3,7 @@ express:
     image:
         repository: ring0exec/http-backend
         tag: latest
-        pullPolicy: IfNotPresent
+        pullPolicy: Always
         pullSecret: regcred
     ports:
         name: http

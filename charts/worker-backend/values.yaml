@@ -3,7 +3,7 @@ worker:
     image:
         repository: ring0exec/worker-backend
         tag: latest
-        pullPolicy: IfNotPresent
+        pullPolicy: Always
         pullSecret: regcred
     ports:
         name: http
