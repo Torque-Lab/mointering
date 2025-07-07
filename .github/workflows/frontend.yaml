@@ -44,6 +44,7 @@ jobs:
         run: |
           git clone https://github.com/Torque-Lab/mointering-gitops.git
           cd mointering-gitops
+          
           sed -i "/nextjs:/,/^[^ ]/s/^\(\s*tag:\s*\).*/\1${{ github.sha }}/" apps/charts/frontend/values.yaml
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
