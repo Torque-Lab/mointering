@@ -114,6 +114,7 @@ process.on('SIGTERM', async () => {
 
 async function start_task() {
     await consumeFromQueue("task_Q", poller);
+    console.log("worker started");
             }
 
 start_task();

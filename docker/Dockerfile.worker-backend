@@ -3,29 +3,26 @@
     WORKDIR /app
     RUN npm install -g pnpm
     
-    # ---------- Dependencies Stage ----------
+
     FROM base AS deps
     WORKDIR /app
     COPY package.json ./
     COPY pnpm-lock.yaml ./
     RUN pnpm install --frozen-lockfile
     
-    # ---------- Builder Stage ----------
+
     FROM base AS builder
     WORKDIR /app
     COPY --from=deps /app/node_modules ./node_modules
     COPY . .
     
-    # Build-time ENV (DATABASE_URL used by Prisma or other tools)
     ARG DATABASE_URL
     RUN pnpm run generate:db
     RUN pnpm turbo run build --filter=./apps/worker-backend
     
-    # ---------- Final Runtime Stage ----------
     FROM base AS runner
     WORKDIR /app
     
-    # Copy only the output (dist or .next etc. if you optimize further)
     COPY --from=builder /app /app
     
     EXPOSE 3000
