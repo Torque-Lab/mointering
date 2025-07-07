@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "start:frontend": "cd apps/frontend && pnpm run start",
+    "start:frontend": "cd apps/frontend &&  node server.js",
     "start:backend": "cd apps/http-backend && pnpm run start",
     "start:worker": "cd apps/worker-backend && pnpm run start",
     "generate:db": "cd packages/db && npx prisma generate --schema=./prisma/schema.prisma",
