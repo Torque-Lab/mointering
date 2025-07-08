@@ -8,3 +8,9 @@ packages/backend-common/node_modules
 packages/typescript-config/node_modules
 packages/eslint-config/node_modules
 .git
+node_modules
+.git
+dist
+.env
+.vscode
+*.log
