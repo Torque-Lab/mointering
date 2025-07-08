@@ -4,29 +4,37 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 FROM base AS deps
-WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./  
 COPY apps/http-backend/package.json ./apps/http-backend/
+COPY packages/backend-common/package.json ./packages/backend-common/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+COPY packages/db/package.json ./packages/db/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-WORKDIR /app    
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/package.json ./
+COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=deps /app/turbo.json ./turbo.json
+
 COPY apps/http-backend ./apps/http-backend
 COPY packages/backend-common ./packages/backend-common
+COPY packages/typescript-config ./packages/typescript-config
 COPY packages/db ./packages/db
 
-ARG DATABASE_URL
-RUN pnpm run generate:db
-RUN pnpm run deploy:db
-RUN pnpm  run build:http-backend
 
+# ARG DATABASE_URL
+# RUN pnpm run generate:db
+# RUN pnpm run deploy:db
+#need to link the workspace properly
+RUN pnpm install --frozen-lockfile 
+RUN pnpm run build:http-backend
 
 FROM node:22-alpine AS runner
 WORKDIR /app
+
 COPY --from=builder /app/apps/http-backend/dist ./apps/http-backend/dist
-#just added for debugging purposes other than that it is not needed
 COPY --from=builder /app/apps/http-backend/package.json ./apps/http-backend/package.json
 
 ENV NODE_ENV=production

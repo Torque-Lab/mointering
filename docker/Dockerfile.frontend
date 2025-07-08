@@ -1,22 +1,23 @@
 
 FROM node:22-alpine AS base
 WORKDIR /app
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g pnpm
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./  
 COPY apps/frontend/package.json ./apps/frontend/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
 RUN pnpm install --frozen-lockfile
-
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=deps /app/package.json ./package.json
+COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=deps /app/turbo.json ./turbo.json
+
 COPY apps/frontend ./apps/frontend
-COPY --from=deps /app/package.json ./
-ARG DATABASE_URL
-RUN pnpm  run build:frontend
+COPY packages/typescript-config ./packages/typescript-config
 
 FROM node:22-alpine AS runner
 WORKDIR /app
