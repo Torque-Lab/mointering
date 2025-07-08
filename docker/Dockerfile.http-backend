@@ -12,10 +12,11 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app    
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package.json ./
 COPY apps/http-backend ./apps/http-backend
 COPY packages/backend-common ./packages/backend-common
 COPY packages/db ./packages/db
-COPY --from=deps /app/package.json ./
+
 ARG DATABASE_URL
 RUN pnpm run generate:db
 RUN pnpm run deploy:db

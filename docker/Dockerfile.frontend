@@ -16,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY apps/frontend ./apps/frontend
 COPY --from=deps /app/package.json ./
 ARG DATABASE_URL
-RUN pnpm  run build:prod
+RUN pnpm  run build:frontend
 
 FROM node:22-alpine AS runner
 WORKDIR /app
