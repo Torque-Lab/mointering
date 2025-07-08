@@ -5,7 +5,7 @@ on:
     paths:
       - .github/workflows/http-backend.yaml
       - 'docker/**'
-      - 'apps/backend/http-backend/**'
+      - 'apps/http-backend/**'
     branches:
       - main
 jobs:

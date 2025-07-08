@@ -5,7 +5,7 @@ on:
     paths:
       - .github/workflows/worker-backend.yaml
       - 'docker/**'
-      - 'apps/backend/worker-backend/**'
+      - 'apps/worker-backend/**'
     branches:
       - main
 jobs:
