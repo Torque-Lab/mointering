@@ -1,7 +1,7 @@
 {
   "name": "@repo/backend-common",
   "version": "1.0.0",
-  "main": "rabbit.ts",
+  "main": "rabbit.js",
   "exports": {
     "./rabbit": "./dist/src/rabbit.js"
   }

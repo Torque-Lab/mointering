@@ -6,6 +6,9 @@
     "./prisma": "./src/client.ts"
   },
   "scripts": {
+    "generate:db": "npx prisma generate --schema=./prisma/schema.prisma",
+    "deploy:db": "npx prisma migrate deploy --schema=./prisma/schema.prisma",
+    "build":"pnpm run generate:db && pnpm run deploy:db",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

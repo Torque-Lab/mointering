@@ -17,21 +17,19 @@ COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=deps /app/turbo.json ./turbo.json
 COPY apps ./apps
 COPY packages ./packages
-
-
-
-# ARG DATABASE_URL
-# RUN pnpm run generate:db
-# RUN pnpm run deploy:db
+ARG DATABASE_URL
 #need to link the workspace properly
 RUN pnpm install --frozen-lockfile 
 RUN pnpm run build:http-backend
 
 FROM node:22-alpine AS runner
-WORKDIR /app
-
 COPY --from=builder /app/apps/http-backend/dist ./apps/http-backend/dist
+COPY --from=builder /app/packages/backend-common/dist ./packages/backend-common/dist
+COPY --from=builder /app/packages/db/dist ./packages/db/dist
 COPY --from=builder /app/apps/http-backend/package.json ./apps/http-backend/package.json
+COPY --from=builder /app/packages/backend-common/package.json ./packages/backend-common/package.json
+COPY --from=builder /app/packages/db/package.json ./packages/db/package.json
+COPY --from=builder /app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 EXPOSE 3001
