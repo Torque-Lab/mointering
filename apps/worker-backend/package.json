@@ -1,11 +1,12 @@
 {
-  "name": "worker-backend",
+  "name": "@sitewatch/worker-backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "dev": "npm run build && npm run start ",
     "start": " node dist/src/index.js",
     "build": " tsc -b",
+    "build:prod": "tsup src/index.ts --out-dir dist --format esm,cjs --dts --clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -15,7 +16,8 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.3"
+    "@types/node": "^22.15.3",
+    "tsup": "^8.5.0"
   },
   "author": "",
   "license": "ISC",
