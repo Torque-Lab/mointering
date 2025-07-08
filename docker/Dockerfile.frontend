@@ -18,18 +18,14 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=./apps/frontend
 
 FROM base AS runner
-WORKDIR /app
+WORKDIR /app/apps/frontend
 
-# Copy built assets from builder
-COPY --from=builder /app/apps/frontend/.next/standalone ./
-COPY --from=builder /app/apps/frontend/.next/static ./.next/static
-COPY --from=builder /app/apps/frontend/public ./public
+COPY --from=builder /app/apps/frontend/.next/standalone/ .
+COPY --from=builder /app/apps/frontend/.next/static/ ./.next/static/
+COPY --from=builder /app/apps/frontend/public/ ./public/
 
-# Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
-
 EXPOSE 3000
 
-
-CMD ["pnpm", "run", "start:frontend"]
+CMD ["node", "server.js"]
