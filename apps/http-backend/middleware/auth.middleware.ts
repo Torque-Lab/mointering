@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { prismaClient } from '@repo/db/prisma';
+import { prismaClient } from '@repo/db';
 
 declare global {
   namespace Express {

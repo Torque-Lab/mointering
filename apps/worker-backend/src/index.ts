@@ -1,5 +1,5 @@
-import { consumeFromQueue, pushToQueue, consumeFromQueueForAlerts } from "@repo/backend-common/rabbit"
-import { prismaClient } from "@repo/db/prisma"
+import { consumeFromQueue, pushToQueue } from "@repo/backend-common"
+import { prismaClient } from "@repo/db"
 import axios from "axios"
 const BATCH_SIZE = 100; 
 const BATCH_TIMEOUT_MS = 5000;
@@ -8,7 +8,6 @@ const regionName = process.env.REGION_NAME || "India";
 if (!regionName) {
     throw new Error('REGION_NAME is not set');
 }
-
 
 interface Batch{
     response_time_ms: number;

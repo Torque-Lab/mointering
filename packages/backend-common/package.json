@@ -1,14 +1,20 @@
 {
   "name": "@repo/backend-common",
   "version": "1.0.0",
-  "main": "rabbit.js",
+  "main": "dist/src/rabbit.js",       
+  "module": "dist/src/rabbit.js",     
   "exports": {
-    "./rabbit": "./dist/src/rabbit.js"
-  }
-,
+    ".": {
+      "require": "./dist/src/rabbit.js",
+      "import": "./dist/src/rabbit.js",
+      "types": "./dist/src/rabbit.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:prod": "tsc -p tsconfig.build.json "
   },
   "dependencies": {
     "amqplib": "^0.10.8"

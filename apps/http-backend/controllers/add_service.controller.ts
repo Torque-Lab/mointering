@@ -1,6 +1,6 @@
-import { ServiceSchema } from "../zod/serviceSchema";
+import { ServiceSchema } from "../zodSchema/serviceSchema";
 import {Request, Response} from "express"
-import {prismaClient} from "@repo/db/prisma"
+import {prismaClient} from "@repo/db"
 
 export const createService=async(req:Request,res:Response)=>{
   

@@ -1,6 +1,6 @@
-import { prismaClient } from '@repo/db/prisma';
+import { prismaClient } from '@repo/db';
 
-async function setupTimescaleDB() {
+async function setupTimescaleDB() { 
 
   try {
     console.log('Setting up TimescaleDB...');

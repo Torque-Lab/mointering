@@ -1,17 +1,29 @@
 {
   "name": "@sitewatch/worker-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/src/index.js",
+  "module": "./dist/src/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "npm run build && npm run start ",
     "start": " node dist/src/index.js",
     "build": " tsc -b",
+    "build:prod": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@repo/backend-common": "workspace:*",
     "@repo/db": "workspace:*",
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "tsc-alias": "^1.8.16"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

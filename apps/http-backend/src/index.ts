@@ -1,6 +1,6 @@
 import express from "express";
-import { prismaClient } from "@repo/db/prisma";
-import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common/rabbit";
+import { prismaClient } from "@repo/db";
+import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common";
 import { redisService } from "../services/redis.service";
 import authRouter from "../routes/auth.routes";
 import addServiceRouter from "../routes/add_service.route";

@@ -1,14 +1,19 @@
 {
   "name": "@repo/db",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/prisma.js",
+  "module": "src/prisma.js",
   "exports": {
-    "./prisma": "./src/client.ts"
+    ".": {
+      "import": "./src/prisma.ts",
+      "require": "./src/prisma.ts"
+    }
   },
   "scripts": {
+    "build:prod": "pnpm run build && pnpm run generate:db ",
     "generate:db": "npx prisma generate --schema=./prisma/schema.prisma",
     "deploy:db": "npx prisma migrate deploy --schema=./prisma/schema.prisma",
-    "build":"pnpm run generate:db",
+    "build":"tsc -p tsconfig.build.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

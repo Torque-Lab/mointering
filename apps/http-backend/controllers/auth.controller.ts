@@ -1,10 +1,10 @@
 
-import { SignUpSchema } from "../zod/authSchema";
-import { prismaClient } from "@repo/db/prisma";
-import { Request, Response } from "express";
-import { SignInSchema } from "../zod/authSchema";
-import { ForgotSchema } from "../zod/authSchema";
-import { ResetSchema } from "../zod/authSchema";
+import { SignUpSchema } from "../zodSchema/authSchema";
+import { prismaClient } from "@repo/db";
+import { Request, Response } from "express";    
+import { SignInSchema } from "../zodSchema/authSchema";
+import { ForgotSchema } from "../zodSchema/authSchema";
+import { ResetSchema } from "../zodSchema/authSchema";
 import { GetKeyValue, IncreaseValueOfKey, isTokenValid, SetKeyValue, storeToken } from "../utils/otp";
 import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";

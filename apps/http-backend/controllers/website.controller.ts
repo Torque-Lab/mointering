@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { prismaClient } from "@repo/db/prisma";
-import { websiteStatus} from "@repo/db/prisma";
-import { WebsiteTick } from "../../../packages/db/generated/prisma";
+import { prismaClient } from "@repo/db";
+import { WebsiteStatus} from "@repo/db"
+import { WebsiteTick } from "@repo/db";
 
 export const getWebsites = async (req: Request, res: Response) => {
   const userId=req.user!
@@ -25,7 +25,7 @@ export const getWebsites = async (req: Request, res: Response) => {
 
       const result = await prismaClient.$queryRaw<{up: number, total: number}[]>`
         SELECT 
-          COUNT(CASE WHEN status = ${websiteStatus.Up} THEN 1 END)::int as up,
+          COUNT(CASE WHEN status = ${WebsiteStatus.Up} THEN 1 END)::int as up,
           COUNT(*)::int as total
         FROM "website_tick"
         WHERE website_id = ${websiteId}
@@ -44,13 +44,13 @@ export const getWebsites = async (req: Request, res: Response) => {
     }   
 
     const formattedWebsites = await Promise.all(
-      websites.map(async (website) => {
+      websites.map(async (website:Website) => {
         const latestTick = website.ticks[0]; 
         return {
           id: website.id,
           name: website.serviceName || 'Unnamed Service',
           url: website.url,
-          status: latestTick?.status === websiteStatus.Up ? 'Online' : 'Offline',
+          status: latestTick?.status === WebsiteStatus.Up ? 'Online' : 'Offline',
           uptime: await calculateUptime(website.id), 
           responseTime: `${latestTick?.response_time_ms || 0}ms`,
           lastCheck: formatTimeAgo(latestTick?.createdAt || website.createdAt),

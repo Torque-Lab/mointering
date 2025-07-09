@@ -1,11 +1,22 @@
 {
   "name": "@sitewatch/http-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/src/index.js",
+  "module": "./dist/src/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "npm run build && npm run start ",
     "start": " node dist/src/index.js",
     "build": " tsc -b",
+    "build:prod": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "migrate:timescaledb": "ts-node src/timescaleDB.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,7 +41,8 @@
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsc-alias": "^1.8.16"
   },
   "author": "",
   "license": "ISC",

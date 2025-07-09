@@ -1,7 +1,7 @@
-import { prismaClient } from "@repo/db/prisma";
+import { prismaClient } from "@repo/db";
 import { Request, Response } from "express";
 
-type Status = 'Up' | 'Down';
+type Status = 'Up' | 'Down';    
 
 interface WebsiteTick {
   status: Status;
