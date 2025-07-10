@@ -14,3 +14,10 @@ dist
 .env
 .vscode
 *.log
+
+**/node_modules
+**/__tests__/
+coverage
+.vscode
+*.log
+dist

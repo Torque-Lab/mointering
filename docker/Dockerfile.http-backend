@@ -1,32 +1,63 @@
-FROM node:22-alpine AS base
-WORKDIR /app
-RUN npm install -g pnpm
 
-FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY apps/http-backend/package.json ./apps/http-backend/
-COPY packages/backend-common/package.json ./packages/backend-common/
-COPY packages/db/package.json ./packages/db/
+    FROM node:22-alpine AS base
+    WORKDIR /app
+    RUN npm install -g pnpm
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app .
-COPY apps ./apps
-COPY packages ./packages
-RUN pnpm install --frozen-lockfile
-RUN pnpm run build:http-backend 
-RUN rm -rf /usr/local/lib/node_modules/npm \
-           /usr/local/bin/npm \
-           /usr/local/bin/npx \
-           ~/.npm /root/.npm
+    FROM base AS deps
+    WORKDIR /app
+    COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+    COPY apps/http-backend/package.json ./apps/http-backend/package.json
+    COPY apps/http-backend/tsconfig.json ./apps/http-backend/tsconfig.json
+    COPY apps/http-backend/tsconfig.build.json ./apps/http-backend/tsconfig.build.json
+    COPY packages/backend-common/package.json ./packages/backend-common/package.json
+    COPY packages/backend-common/tsconfig.json ./packages/backend-common/tsconfig.json
+    COPY packages/backend-common/tsconfig.build.json ./packages/backend-common/tsconfig.build.json
+    COPY packages/db/package.json ./packages/db/package.json
+    COPY packages/typescript-config/package.json ./packages/typescript-config/package.json
+    RUN pnpm install --frozen-lockfile
+    
+    FROM base AS builder
+    WORKDIR /app
+    COPY --from=deps /app .
+    COPY apps/http-backend ./apps/http-backend
+    COPY packages/backend-common ./packages/backend-common
+    COPY packages/db ./packages/db
+    RUN pnpm run build:http-backend
+    
+    FROM node:22-alpine AS runner
+    WORKDIR /app
+    RUN npm install -g pnpm
+    
+    COPY --from=builder /app/apps/http-backend ./apps/http-backend
+    COPY --from=builder /app/packages/backend-common ./packages/backend-common
+    COPY --from=builder /app/packages/db ./packages/db
+    COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+    COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+    COPY --from=builder /app/package.json ./package.json
+    RUN   pnpm bridge:symlink-http-backend
 
+    RUN set -e && \
+    echo "Cleaning TypeScript source files and dev-only folders..." && \
+    cd /app/apps/http-backend && \
+    echo "Cleaning /app/apps/http-backend..." && \
+    find . -type f -name "*.ts" ! -path "./dist/*" -delete && \
+    find . -name "*.tsbuildinfo" -delete && \
+    rm -rf controllers routes services utils middleware zodSchema src && \
+    rm -f tsconfig.json tsconfig.build.json && \
+    cd /app/packages/backend-common && \
+    echo "Cleaning /app/packages/backend-common..." && \
+    find . -type f -name "*.ts" ! -path "./dist/*" -delete && \
+    find . -name "*.tsbuildinfo" -delete && \
+    rm -rf src && \
+    rm -f tsconfig.json tsconfig.build.json && \
+    echo "Cleanup complete. Only dist/, config, and runtime deps remain."
 
-FROM builder AS runner
-WORKDIR /app          
-COPY --from=builder /app /app        
-RUN pnpm prune --prod
-      
-ENV NODE_ENV=production
-EXPOSE 3001
-CMD ["node", "apps/http-backend/dist/src/index.js"]
-           
+    RUN rm -rf /usr/local/lib/node_modules/npm \
+      /usr/local/bin/npm \
+      /usr/local/bin/npx \
+      ~/.npm /root/.npm
+
+    ENV NODE_ENV=production
+    EXPOSE 3001
+    CMD ["node", "apps/http-backend/dist/src/index.js"]
+    

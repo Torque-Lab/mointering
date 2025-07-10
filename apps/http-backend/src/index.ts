@@ -1,3 +1,9 @@
+
+console.log("Running from:", process.cwd());
+console.log("NODE_PATH:", process.env.NODE_PATH || 'not set');
+console.log("NODE_ENV:", process.env.NODE_ENV || 'not set');
+console.log("NODE_VERSION:", process.env.NODE_VERSION || 'not set');
+
 import express from "express";
 import { prismaClient } from "@repo/db";
 import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common";

@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "build:prod": "tsc -p tsconfig.build.json "
+    "build:prod": "echo CURRENT DIR: $(pwd) && tsc -p tsconfig.build.json "
   },
   "dependencies": {
     "amqplib": "^0.10.8"
