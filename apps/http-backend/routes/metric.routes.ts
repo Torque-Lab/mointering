@@ -3,7 +3,7 @@ import { getMetrics, getUptimeSummary } from "../controllers/metric.controller";
 import { genricRateLimiter } from "../middleware/rateLimit.genric";
 const router: IRouter = Router();
 
-const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => 
+const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => 
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

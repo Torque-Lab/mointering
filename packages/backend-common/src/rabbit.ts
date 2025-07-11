@@ -90,7 +90,7 @@ export async function pushToQueue(queue_name: string, item: Task) {
         channel.consume(queue_name, async (msg) => {
             if (!msg) return;
             
-            const task = JSON.parse(msg.content.toString());
+            const task:Task = JSON.parse(msg.content.toString());
             try {
                 const success = await sendEmailAlert(task.url, task.id);
                 if (success) {
@@ -119,7 +119,7 @@ export async function consumeFromQueue(queue_name: string, poller: (url: string,
         channel.consume(queue_name, async (msg) => {
             if (!msg) return;
             
-            const task = JSON.parse(msg.content.toString());
+            const task:Task = JSON.parse(msg.content.toString());
             try {
                 const success = await poller(task.url, task.id);
                 if (success) {

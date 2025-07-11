@@ -1,7 +1,8 @@
 
 import { SignUpSchema } from "../zodSchema/authSchema";
 import { prismaClient } from "@repo/db";
-import { Request, Response } from "express";    
+import { Request, Response } from "express";   
+import crypto from "crypto";
 import { SignInSchema } from "../zodSchema/authSchema";
 import { ForgotSchema } from "../zodSchema/authSchema";
 import { ResetSchema } from "../zodSchema/authSchema";
@@ -9,6 +10,7 @@ import { GetKeyValue, IncreaseValueOfKey, isTokenValid, SetKeyValue, storeToken 
 import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { use } from "react";
 
 function setAuthCookie(res: Response, token: string, token_name: string,maxAge:number) {
     const isDev = process.env.NODE_ENV === "development";
@@ -21,6 +23,15 @@ function setAuthCookie(res: Response, token: string, token_name: string,maxAge:n
     });
   }
   
+function generateTimeId(): string{
+    let timeId="";
+    const option=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9", "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+    for(let i=0;i<18;i++){
+        timeId+=option[Math.floor(Math.random() * option.length)];
+    }
+    timeId+=Date.now();
+    return timeId;
+}
 
 export const signUp = async (req: Request, res: Response) => {
     try {
@@ -56,7 +67,7 @@ export const signIn = async (req: Request, res: Response) => {
         }
         const { username, password } = parsedData.data;
         const failedAttempts = await GetKeyValue(username);
-        if (failedAttempts != null && failedAttempts >= 6) {
+        if (failedAttempts?.value != null && failedAttempts.value >= 6) {
            res.status(403).json({ message: "Too many failed login attempts. Try again in 24 hours  or reset your password" });
            return;
         }
@@ -65,12 +76,28 @@ export const signIn = async (req: Request, res: Response) => {
         
         const isValid = user && await bcrypt.compare(password, user.password);
         if (!isValid) {
-            await IncreaseValueOfKey(username,24);
+            await IncreaseValueOfKey(username,7);
             res.status(401).json({ error: "Invalid username or password" });
             return;
         }
-        const access_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_ACCESS!,);
-        const refresh_token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET_REFRESH!,);
+
+        const payload1= {
+            timeId:generateTimeId(),
+            userId:user.id,
+            tokenId: crypto.randomUUID(), 
+            issuedAt: Date.now(), 
+            nonce: crypto.randomBytes(16).toString('hex') 
+
+        }
+        const payload2= {
+            timeId:generateTimeId(),
+            userId:user.id,
+            tokenId: crypto.randomUUID(), 
+            issuedAt: Date.now(), 
+            nonce: crypto.randomBytes(16).toString('hex') 
+        }
+        const access_token = jwt.sign({ payload1}, process.env.JWT_SECRET_ACCESS!,);
+        const refresh_token = jwt.sign({ payload2}, process.env.JWT_SECRET_REFRESH!,);
         
         setAuthCookie(res, access_token, "access_token",60 * 60 * 1000);
         setAuthCookie(res, refresh_token, "refresh_token",60 * 60 * 1000*24*7);
@@ -99,12 +126,24 @@ export const refresh = async (req: Request, res: Response) => {
             res.status(401).json({ error: "Invalid token" });
             return;
         }
-        const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_REFRESH || 'your-secret-key') as { userId: string };
+        const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_REFRESH || '78yh76tvt7ividtgd75tbftewg') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
         if (!decoded.userId) {
             res.status(401).json({ error: "Invalid token" });
             return;
         }
-        const access_token = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
+        const payload1= {
+            timeId:generateTimeId(),
+            userId:decoded.userId,
+            tokenId: crypto.randomUUID(), 
+            issuedAt: Date.now(), 
+            nonce: crypto.randomBytes(16,(err, buf)=>{
+                if(err){
+                    return null
+                }
+                return buf.toString('hex');
+            })
+        }
+        const access_token = jwt.sign({ payload1}, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667');
      
         setAuthCookie(res, access_token, "access_token",60 * 60 * 1000);
         res.status(200).json({ access_token });
@@ -124,7 +163,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     
         const email = parsedData.data.username;
         const forgotAttempts = await GetKeyValue(email);
-        if(forgotAttempts!=null && forgotAttempts>4){
+        if(forgotAttempts?.value!=null && forgotAttempts.value>4){
             res.status(403).json({ message: "Too many requests try after 24 hours" });
             return;
         }
@@ -140,16 +179,26 @@ export const forgotPassword = async (req: Request, res: Response) => {
         }
     
         if (user) {
-            await IncreaseValueOfKey(email,24);
-            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_ACCESS || 'your-secret-key');
-            storeToken(token);  
-            const link = `${process.env.NEXT_PUBLIC_URL}/reset-password?oneTimeToken=${token}`;
-            sendPasswordResetEmail(email, link);
+            await IncreaseValueOfKey(email,1);
+            const resetPayload={
+                timeId:generateTimeId(),
+                userId:user.id,
+                tokenId: crypto.randomUUID(), 
+                issuedAt: Date.now(), 
+                nonce: crypto.randomBytes(16).toString('hex') 
+            }
+
+            const token = jwt.sign({ resetPayload }, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667');
+            if(await storeToken(token)){
+                const link = `${process.env.NEXT_PUBLIC_URL}/reset-password?oneTimeToken=${token}`;
+                 await sendPasswordResetEmail(email, link);
+            }  
+            
         }
     
         res.status(200).json({
           message:
-            "if the user is registered,you will recive an OTP with in 5 Minute",
+            "if the user is registered,you will recived password reset link in 5 minutes",
         });
       } catch (error) {
          console.log(error);
@@ -167,10 +216,8 @@ export const resetPassword = async (req: Request, res: Response) => {
             return;
         }
         const { username, token, newPassword } = parsedData.data;
-
-        const isValidToken = isTokenValid(token);
     
-        if (!isValidToken) {
+        if (!await isTokenValid(token)) {
           res.status(403).json({ message: "Invalid Token" });
           return;
         }
@@ -192,28 +239,19 @@ export const resetPassword = async (req: Request, res: Response) => {
             data: { password: hashedPassword },
         });   
     
-         res.json({ message: "Password reset successfully" });
+         res.status(200).json({ message: "Password reset successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal server error" });
     }
 };  
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getSession = async (req: Request, res: Response) => {
 
-const access_token = req.cookies.access_token;
-if (!access_token) {
-    res.status(401).json({ error: "Invalid token" });
-    return;
-}
-const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || '') as { userId: string };
-if (!decoded.userId) {
-    res.status(401).json({ error: "Invalid token" });
-    return;
-}
+const userId=req.userId;
 const user = await prismaClient.user.findUnique({
     where: {
-        id: decoded.userId,
+        id: userId,
     },
     select: {
         id: true,
@@ -225,7 +263,7 @@ const user = await prismaClient.user.findUnique({
 });
 
 if (!user) {
-    res.status(404).json({ error: "User not found" });
+    res.status(401).json({ error: "User not found" });
     return;
 }
 

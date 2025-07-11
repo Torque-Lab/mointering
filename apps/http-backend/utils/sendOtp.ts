@@ -18,9 +18,9 @@ export async function sendOTPEmail(to: string, otp: string) {
     return false;
   }
 }
-export function sendEmail(to: string, serviceName: string) {
+export async function sendEmail(to: string, serviceName: string) {
   try {
-    const response = resend.emails.send({
+    const response = await resend.emails.send({
       from: "sitewatch<noreply@suvidhaportal.com>",
       to: to,
       subject: "Service Alert ",

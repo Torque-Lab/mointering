@@ -1,11 +1,11 @@
 'use client';
-
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function HeroSection() {
   return (
-    <section className="relative bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section className="flex flex-col lg:flex-row items-center relative bg-white overflow-hidden">
+      <div className="max-w-7xl flex justify-center mx-auto lg:ml-4 ">
         <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
           <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 lg:mt-16 lg:px-8 xl:mt-20">
             <div className="sm:text-center lg:text-left">
@@ -50,16 +50,16 @@ export function HeroSection() {
           </main>
         </div>
       </div>
-      <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full bg-gradient-to-r from-indigo-100 to-indigo-50 rounded-l-3xl flex items-center justify-center">
-          <div className="relative w-4/5 h-4/5">
-            {/* Placeholder for hero illustration */}
-            <div className="absolute inset-0 bg-white/30 backdrop-blur-sm rounded-2xl border-2 border-dashed border-indigo-200 flex items-center justify-center">
-              <span className="text-indigo-400 text-lg font-medium">Website Monitoring Dashboard</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div className="relative w-full lg:w-[60%] h-auto lg:h-full flex justify-center lg:-mt-20 p-4">
+    <Image
+          src="/dashboard.png"
+          alt="Website monitoring dashboard"
+          width={1200}  
+          height={950}  
+          priority
+          className="w-full h-auto lg:h-full bg-gray-50 rounded-xl shadow-2xl ring-1 ring-indigo-100 object-cover"
+    />
+</div>
     </section>
   );
 }

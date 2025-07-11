@@ -1,5 +1,5 @@
 import { prismaClient } from "@repo/db";
-import { Request, Response } from "express";
+import { Request, Response,NextFunction } from "express";
 
 type Status = 'Up' | 'Down';    
 
@@ -8,7 +8,7 @@ interface WebsiteTick {
   createdAt: Date;
   response_time_ms: number;
 }
-export const getMetrics = async (req: Request, res: Response) => {
+export const getMetrics = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { id } = req.params;
     const { from, to } = req.query;
@@ -64,7 +64,7 @@ export const getMetrics = async (req: Request, res: Response) => {
   }
 };
 
-export const getUptimeSummary = async (req: Request, res: Response) => {
+export const getUptimeSummary = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { id } = req.params;
     const now = new Date();

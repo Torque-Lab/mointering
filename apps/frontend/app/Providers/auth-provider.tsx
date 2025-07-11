@@ -60,6 +60,7 @@ export function useSession(): Session {
       isRefreshing = false;
     }
   }, [router]);
+  
 
   useEffect(() => {
     fetchUser();

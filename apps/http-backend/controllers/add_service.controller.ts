@@ -11,7 +11,7 @@ export const createService=async(req:Request,res:Response)=>{
              return;
            }
            const {serviceName,url ,email}=parsedData.data
-           const  user_id=req.user!
+           const  user_id=req.userId!
            const website=await prismaClient.website.create({
             data:{
                 serviceName,

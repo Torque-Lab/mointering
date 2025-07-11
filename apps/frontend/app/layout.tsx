@@ -12,7 +12,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "SiteWatch",
+  title: "SiteWatch - Monitor your websites with confidence.",
   description: "Monitor your websites with confidence. Get instant alerts when something goes wrong.",
 };
 

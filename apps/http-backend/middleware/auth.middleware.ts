@@ -5,26 +5,20 @@ import { prismaClient } from '@repo/db';
 declare global {
   namespace Express {
     interface Request {
-      user?: string;
+      userId?: string;
     }
   }
 }
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   try {
-   
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-       res.status(401).json({ error: 'Authentication required' });
-       return;
-    }
-
-    const access_token = authHeader.split(' ')[1] || req.cookies.access_token;
+    const tokenFromHeader = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : undefined;
+    const access_token = req.cookies.access_token || tokenFromHeader;
     if (!access_token) {
        res.status(401).json({ error: 'Invalid token' });
        return;
     }
  
-    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'your-secret-key') as { userId: string };
+    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'z78h98yryvei7ritgfb67385vg7667') as { userId: string };
 
 
     if(!decoded.userId) {
@@ -48,7 +42,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       return;
     }
 
-    req.user = user.id;
+    req.userId = user.id;
     next();
   } catch (error) {
     console.error('Authentication error:', error);

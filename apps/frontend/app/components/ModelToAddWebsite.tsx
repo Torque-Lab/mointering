@@ -106,7 +106,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
                   type="url"
                   value={formData.url}
                   onChange={handleInputChange}
-                  placeholder="https://example.com"
+                  placeholder="https://example.com/health"
                   className="w-full"
                   required
                 />

@@ -48,10 +48,12 @@ export function Footer() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           {/* Logo and tagline */}
           <div className="space-y-4 xl:col-span-1">
-            <div className="flex items-center space-x-2">
+            <Link href="/">
+            <div className="flex items-center space-x-2 cursor-pointer">
               <MonitorIcon />
               <span className="text-xl font-bold text-gray-900">SiteWatch</span>
             </div>
+            </Link>
             <p className="text-gray-500 text-base">
               Monitor your websites with confidence. Get instant alerts when something goes wrong.
             </p>

@@ -4,14 +4,14 @@ import { WebsiteStatus} from "@repo/db"
 import { WebsiteTick } from "@repo/db";
 
 export const getWebsites = async (req: Request, res: Response) => {
-  const userId=req.user!
+  const userId=req.userId!
   try {
     const websites = await prismaClient.website.findMany({
       where: {
         user_id: userId,
       },
       include: {
-        ticks: {
+        ticks: {  
           take: 1,
           orderBy: {
             createdAt: 'desc',

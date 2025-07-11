@@ -14,49 +14,72 @@ import metricRouter from "../routes/metric.routes";
 import websiteRouter from "../routes/website.routes";
 import cookieParser from "cookie-parser";
 import { sendEmail } from "../utils/sendOtp";
-
+import { Request, Response } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 app.use(express.json());
 const isDev=process.env.NODE_ENV==='developement';
 if(!isDev){
   app.set("trust proxy", 1);
 }
+
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/add-service", addServiceRouter);
 app.use("/api", metricRouter);
 app.use("/api", websiteRouter);
 
-app.get("/api/health", (req, res) => {
+app.get("/api/health", (req:Request, res:Response) => {
   res.status(200).json({ message: "Server is running" });
 })
 
+interface service{
+    id:string;
+    url:string;
+}
+let cachedData: service[] = [];
+let previousCount: number = 0;
+let isRunning: boolean = false;
 
 async function taskScheduler() {
   async function run() {
-    try {
-      const response = await prismaClient.website.findMany({
-        select: { id: true, url: true },
-      });
 
-      if (response.length != 1) {
-        await pushManyToQueue("task_Q", response);
-        console.log(`Pushed ${response.length} tasks to queue.`);
+    if (isRunning) {
+      console.log('Skipping task as the previous one is still running...');
+      return;
+    }
+    isRunning = true;
+    try {
+      const currentCount = await prismaClient.website.count();
+
+      if (currentCount !== previousCount) {
+        const response = await prismaClient.website.findMany({
+          select: { id: true, url: true },
+        });
+
+        cachedData = response; 
+        previousCount = currentCount; 
+        console.log(`Data count changed. New count: ${currentCount}`);
       } else {
-        console.log("No tasks found.");
+        console.log("Data count is the same. Using cached data.");
       }
+      await pushManyToQueue("task_Q", cachedData);  
+      console.log(`Pushed ${cachedData.length} tasks to queue.`);
     } catch (e) {
       console.error("Error in taskScheduler:", e);
-    } finally {
-      setTimeout(run, 3000);
+    }finally{
+      isRunning = false;
     }
   }
 
-  run();
+  const intervalId = setInterval(run, 10000); 
+  return intervalId;
 }
 async function start_alerts() {
-  consumeFromQueueForAlerts("alerts", sendEmailAlert);
+  await consumeFromQueueForAlerts("alerts", sendEmailAlert);
 }
+
 async function sendEmailAlert(url: string, id: string) {
   try {
     const website = await prismaClient.website.findUnique({
@@ -71,9 +94,11 @@ async function sendEmailAlert(url: string, id: string) {
       console.log(`No email found for website with id ${id}.`);
       return false;
     }
-      sendEmail(email, serviceName);
-    console.log(`Email sent to ${email} for website ${url}.`);
-    return true;
+      if(await sendEmail(email, serviceName)){
+        console.log(`Email sent to ${email} for website ${url}.`);
+        return true;
+      }
+    return false;
   } catch (error) {
     console.error(`Error sending email for website ${url}:`, error);
     return false;
@@ -94,6 +119,9 @@ async function startServer() {
   }
 }
 
+startServer();
+taskScheduler();
+start_alerts();
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Shutting down ......');
   try {
@@ -105,8 +133,3 @@ process.on('SIGTERM', async () => {
     process.exit(1);
   }
 });
-
-
-startServer();
-taskScheduler();
-start_alerts();

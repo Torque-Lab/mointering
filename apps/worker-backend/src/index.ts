@@ -5,10 +5,6 @@ const BATCH_SIZE = 100;
 const BATCH_TIMEOUT_MS = 5000;
 const regionName = process.env.REGION_NAME || "India";
 
-if (!regionName) {
-    throw new Error('REGION_NAME is not set');
-}
-
 interface Batch{
     response_time_ms: number;
     status: 'Up' | 'Down' | 'Unknown';
@@ -103,13 +99,6 @@ async function poller(url: string, id: string) {
     }
 }
 
-process.on('SIGTERM', async () => {
-    if (batch.length > 0) {
-        console.log('Processing final batch before shutdown...');
-        await processBatch();
-    }
-    process.exit(0);
-});
 
 async function start_task() {
     await consumeFromQueue("task_Q", poller);
@@ -117,3 +106,11 @@ async function start_task() {
             }
 
 start_task();
+
+process.on('SIGTERM', async () => {
+    if (batch.length > 0) {
+        console.log('Processing final batch before shutdown...');
+        await processBatch();
+    }
+    process.exit(0);
+});

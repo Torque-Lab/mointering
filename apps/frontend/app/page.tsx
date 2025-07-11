@@ -9,7 +9,7 @@ export default function LandingPage() {
       <header className="flex-none">
         <Header/>
       </header>
-      <main className="flex-grow m-20 p-10">
+      <main className="flex-grow flex-wrap mt-20 ">
         <HeroSection />
         <FeatureSection/>
       </main>
