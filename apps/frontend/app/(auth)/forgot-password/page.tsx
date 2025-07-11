@@ -3,17 +3,17 @@
 import { useRef } from "react";
 
 export default function ForgotPasswordPage() {
-    const emailRef = useRef<HTMLInputElement>(null);
+    const usernameRef = useRef<HTMLInputElement>(null);
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const email = emailRef.current?.value;
+        const username = usernameRef.current?.value;
         const response = await fetch('/api/auth/forgot-password', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ username })
         });
         const data = await response.json();
         if (data.success) {
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                ref={emailRef}
+                                ref={usernameRef}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Email"
                             />

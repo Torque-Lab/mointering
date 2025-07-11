@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SignUpSchema = z.object({
-    username: z.string().min(3).max(54),
+    username: z.string().min(3).max(96),
     password: z
       .string()
       .min(8)
@@ -18,7 +18,7 @@ export const SignUpSchema = z.object({
 });
 
 export const SignInSchema = z.object({
-    username: z.string().min(3).max(54),
+    username: z.string().min(3).max(96),
     password: z
       .string()
       .min(8)
@@ -33,11 +33,10 @@ export const SignInSchema = z.object({
   });
 
   export const ForgotSchema = z.object({
-    username: z.string().min(3).max(54),
+    username: z.string().min(3).max(96),
   });
   
   export const ResetSchema = z.object({
-    username: z.string().min(3).max(54),
     token: z.string(),
     newPassword: z
       .string()

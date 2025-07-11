@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
             if (storedToken) {
                 setToken(storedToken);
             } else {
-                setError('Invalid or expired token');
+                setError('Invalid or expired session ');
             }
         }
     }, []);

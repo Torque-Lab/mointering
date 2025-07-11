@@ -86,7 +86,7 @@ export const signIn = async (req: Request, res: Response) => {
             userId:user.id,
             tokenId: crypto.randomUUID(), 
             issuedAt: Date.now(), 
-            nonce: crypto.randomBytes(16).toString('hex') 
+            nonce: crypto.randomBytes(16).toString('hex')
 
         }
         const payload2= {
@@ -94,7 +94,7 @@ export const signIn = async (req: Request, res: Response) => {
             userId:user.id,
             tokenId: crypto.randomUUID(), 
             issuedAt: Date.now(), 
-            nonce: crypto.randomBytes(16).toString('hex') 
+            nonce: crypto.randomBytes(16).toString('hex')
         }
         const access_token = jwt.sign({ payload1}, process.env.JWT_SECRET_ACCESS!,);
         const refresh_token = jwt.sign({ payload2}, process.env.JWT_SECRET_REFRESH!,);
@@ -136,12 +136,7 @@ export const refresh = async (req: Request, res: Response) => {
             userId:decoded.userId,
             tokenId: crypto.randomUUID(), 
             issuedAt: Date.now(), 
-            nonce: crypto.randomBytes(16,(err, buf)=>{
-                if(err){
-                    return null
-                }
-                return buf.toString('hex');
-            })
+            nonce: crypto.randomBytes(16).toString('hex')
         }
         const access_token = jwt.sign({ payload1}, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667');
      
@@ -185,7 +180,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
                 userId:user.id,
                 tokenId: crypto.randomUUID(), 
                 issuedAt: Date.now(), 
-                nonce: crypto.randomBytes(16).toString('hex') 
+                nonce: crypto.randomBytes(16).toString('hex')
             }
 
             const token = jwt.sign({ resetPayload }, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667');
@@ -215,7 +210,8 @@ export const resetPassword = async (req: Request, res: Response) => {
             res.status(400).json({ message: "Invalid data" });
             return;
         }
-        const { username, token, newPassword } = parsedData.data;
+        const { token, newPassword } = parsedData.data;
+        const resetPayload = jwt.verify(token, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
     
         if (!await isTokenValid(token)) {
           res.status(403).json({ message: "Invalid Token" });
@@ -224,7 +220,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     
         const user = await prismaClient.user.findFirst({
           where: {
-            username: username,
+            id: resetPayload.userId,
           },
         });
     
@@ -235,7 +231,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     
         const hashedPassword = await bcrypt.hash(newPassword, 10);  
         await prismaClient.user.update({
-            where: { username },
+            where: { id: resetPayload.userId },
             data: { password: hashedPassword },
         });   
     
