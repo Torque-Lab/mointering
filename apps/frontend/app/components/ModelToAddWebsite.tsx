@@ -12,31 +12,26 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
   const [formData, setFormData] = useState({
     name: '',
     url: '',
-    email: ''
+    email: '',
   });
-  
+
   if (!open) return null;
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
-     await fetch('/api/add-service', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
+      await fetch('/api/add-service', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
       onClose();
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -46,110 +41,78 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
   };
 
   return (
-    <div className={`fixed inset-0 z-50 overflow-y-auto ${className}`}>
-      <div className="fixed inset-0 bg-black/50" aria-hidden="true" onClick={onClose} />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div 
-          className="relative bg-white rounded-lg max-w-md w-full p-6 mx-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Add New Service</h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
-              aria-label="Close"
-            >
-              <span className="text-2xl">&times;</span>
-            </button>
-          </div>
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 ${className}`} onClick={onClose}>
+      <div
+        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
           onClick={onClose}
-          aria-hidden="true"
-        />
-        <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
-          <div className="absolute right-4 top-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
-              aria-label="Close"
-            >
-              <CrossIcon />
-            </button>
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
+          aria-label="Close"
+        >
+          <CrossIcon />
+        </button>
+
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">Add New Service</h3>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              Service Name
+            </label>
+            <InputBox
+              id="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="Enter service name"
+              required
+              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+            />
           </div>
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Add New Service</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Service Name
-                </label>
-                <InputBox
-                  id="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter service name"
-                  className="w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-                  Service URL
-                </label>
-                <InputBox
-                  id="url"
-                  type="url"
-                  value={formData.url}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/health"
-                  className="w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Notification Email (Optional)
-                </label>
-                <InputBox
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="your@email.com"
-                  className="w-full"
-                />
-              </div>
-              <div className="flex justify-end space-x-3 pt-4">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={onClose}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Adding...' : 'Add Service'}
-                </Button>
-              </div>
-            </form>
+
+          <div>
+            <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
+              Service URL
+            </label>
+            <InputBox
+              id="url"
+              type="url"
+              value={formData.url}
+              onChange={handleInputChange}
+              placeholder="https://example.com/health"
+              required
+              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+            />
           </div>
-        </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Notification Email (Optional)
+            </label>
+            <InputBox
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="your@email.com"
+              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding...' : 'Add Service'}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
-    </div>
-    </div>
   );
-};
+}
 
 
 interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -189,7 +152,7 @@ export function CrossIcon() {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="size-4 cursor-pointer bg-gray-700"
+        className=" cursor-pointer w-5 h-5"
       >
         <path
           strokeLinecap="round"

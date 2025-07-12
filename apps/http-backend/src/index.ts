@@ -26,7 +26,7 @@ if(!isDev){
 
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
-app.use("/api/add-service", addServiceRouter);
+app.use("/api", addServiceRouter);
 app.use("/api", metricRouter);
 app.use("/api", websiteRouter);
 
