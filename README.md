@@ -6,12 +6,53 @@ A robust website monitoring platform built with modern technologies.This project
 
 The project is built as a monorepo using Turborepo, consisting of multiple services:
 
-- **Frontend**: Next.js application for the user interface
-- **API**: Express.js backend service
-- **Worker**: Separate service for polling user sites
-- **Queue**: RabbitMQ for task management
-- **Database**: PostgreSQL with TimescaleDB extension
-- **ORM**: Prisma for database operations
+### 🌐 Architecture Overview
+
+#### Core Concept
+- **Unified Domain Architecture**: Frontend and backend operate under the same domain (e.g., `https://sitewatch.suvidhaportal.com` for frontend and `https://suvidhaportal.com/api` for backend)
+- **Zero CORS**: Seamless communication between frontend and backend without CORS complications and due this we can enable as much strict security policies as possible related to auth
+- **Custom Authentication**: Built-in authentication system replacing NextAuth with enhanced security features
+
+#### How It Works
+1. **In Development Mode**:
+   - Next.js proxies API requests to Express backend using `next.config.mjs`
+   - All requests hit the same Next.js public URL
+   - Proxied to Express backend running separately
+
+2. **In Production Mode**:
+   - Kubernetes Ingress/Load Balancer routes `/api` of  requests of frontend url to Express backend
+   - and by this we are  at same origin for all requests and strict all security policies
+
+### why this architecture?
+
+- **Best of Both Worlds**: Combines Next.js frontend capabilities with Express backend flexibility and to maintain cleaner routes and full flexibility to add integrations  
+- **i don't like nextjs as backend for api routes so i figure out some solutions to integrate nextjs with express like they are in same origin**  
+
+
+#### Authentication Flow
+- **Cookie-based Authentication** with strict security policies:
+  - Secure, HttpOnly cookies for access and refresh tokens
+  - CSRF protection with dedicated tokens
+  - added Session management feature for both client and server components , you will find in /apps/frontend/app/providers
+
+#### Why This Architecture?
+- **Best of Both Worlds**: Combines Next.js frontend capabilities with Express backend flexibility
+- **Simplified Authentication**: No need for NextAuth
+- **Production-Grade Security**: Implements industry-standard security practices
+- **Developer Experience**: Clean separation of concerns between frontend and backend
+
+### 🏗️ System Components
+
+| Component       | Technology       | Purpose                                  |
+|-----------------|------------------|------------------------------------------|
+| **Frontend**    | Next.js          | User interface and API routing           |
+| **Backend**     | Express.js       | Business logic and API endpoints         |
+| **Worker**      | Node.js          | Background job processing and monitoring |
+| **Message Queue**| RabbitMQ        | Task distribution and management         |
+| **central Cache**| Redis           | central cache for auth  and rate limiting       |
+| **Database**    | PostgreSQL       | Primary data storage                     |
+| **ORM**         | Prisma           | Type-safe database operations            |
+| **Extensions**  | TimescaleDB      | Time-series data optimization            |
 
 ## 🚀 Features
 
@@ -19,7 +60,23 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 - Efficient database writes using batching
 - Distributed task processing
 - Scalable architecture
-- Modern and responsive UI
+- Modern and responsive UI (UI may be not great but backend and DevOps are built with complete security and scalablibility in mind)
+
+## 🚀 Deployment
+### CI/CD Pipeline
+- **GitHub Actions**: Automated build and test workflows
+- **Docker**: Containerization of all services 
+-**fact** : you wil find that in dockerfile , even in final image i have done pnpm bridge:symlink command, you will be wondering why i did this ? is i so  dump but wait workspace like pnpm,  work by doing symlink(wait symlink is way to connect file or folder,its like pointer to point to another file if needed by some other without making copy in both place) for node_modules, that is it  keep only one node_modules at root level and link it other apps who might need it(this is done by pnpm and  figure out by package.json of consumer app or service and link it only that libraries they claim), so when you even build this link in builder stage of docker and copy it to final image, this link will got broken to layering of docker image and final code will throw module not found error,and i not saying this in just guess , i done 100 of various attempt to prevent symlink form breakage but despite due filsystem and docker constraint it not work
+- **Helm Charts**: Kubernetes package management
+- **ArgoCD**: GitOps continuous delivery
+- **Kubernetes**: Container orchestration
+
+### Deployment Flow
+1. Code push triggers GitHub Actions
+2. Docker images are built and pushed to container registry and update tag in gitops repo which being mointering by argocd
+3. ArgoCD detects changes and deploys to k8s clustar  environment
+4. Helm is used to write templated and clean k8s resources
+5. Health checks and automated rollback on failure
 
 ## 🛠️ Tech Stack
 
@@ -62,13 +119,13 @@ pnpm dev
 ```
 mointering/
 ├── apps/
-│   ├── web as frontend/     # Next.js frontend application
-│   ├── http-backend/         # Express.js backend service
-│   └── worker-node/          # Polling worker service
+│   ├──  frontend/     # Next.js frontend application
+│   ├──  http-backend/         # Express.js backend service
+│   └──  worker-node/          # Polling worker service
 ├── packages/
 │   ├── db/               # database configuration and schema
 │   └──backend-common/      # common backend logic 
-└── package.json
+└── package.json  # root package.json
 ```
 
 ## 🔧 Configuration
@@ -92,7 +149,6 @@ API_HOST=localhost
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 `
-
-
-
 Project Link: [https://github.com/Torque-Lab/mointering]
+
+### some fun facts about this project
