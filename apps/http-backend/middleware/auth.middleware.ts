@@ -14,22 +14,21 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   try {
     const tokenFromHeader = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : undefined;
     const access_token = req.cookies.access_token || tokenFromHeader;
-    console.log(access_token,"access_token")
     if (!access_token) {
        res.status(401).json({ error: 'Invalid token' });
        return;
     }
  
-    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'z78h98yryvei7ritgfb67385vg7667') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
+    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'z78h98yryvei7ritgfb67385vg7667') as { payload1: { userId: string, timeId: string, tokenId: string, issuedAt: number } };
 
-
-    if(!decoded.userId) {
+    if(!decoded?.payload1?.userId) {
       res.status(401).json({ error: 'Invalid token' });
       return;
     }
     
+    const userId = decoded.payload1.userId;
     const user = await prismaClient.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: userId },
       select: {
         id: true,
         username: true,

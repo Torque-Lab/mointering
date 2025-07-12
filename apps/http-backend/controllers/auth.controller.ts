@@ -226,7 +226,7 @@ export const resetPassword = async (req: Request, res: Response) => {
             return;
         }
         const { token, newPassword } = parsedData.data;
-        const resetPayload = jwt.verify(token, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
+        const resetPayloadData = jwt.verify(token, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667') as {resetPayload:{ userId: string ,timeId: string ,tokenId: string ,issuedAt: number}};
     
         if (!await isTokenValid(token)) {
           res.status(403).json({ message: "Invalid Token",success:false });
@@ -235,7 +235,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     
         const user = await prismaClient.user.findFirst({
           where: {
-            id: resetPayload.userId,
+            id: resetPayloadData.resetPayload.userId,
           },
         });
     
@@ -246,7 +246,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     
         const hashedPassword = await bcrypt.hash(newPassword, 10);  
         await prismaClient.user.update({
-            where: { id: resetPayload.userId },
+            where: { id: resetPayloadData.resetPayload.userId },
             data: { password: hashedPassword },
         });   
     
