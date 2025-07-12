@@ -59,4 +59,4 @@ RUN rm -rf /usr/local/lib/node_modules/npm \
 
 ENV NODE_ENV=production
 EXPOSE 3002
-CMD ["node", "apps/worker-backend/dist/src/index.js"]
+CMD ["pnpm","run","start:worker-backend"]

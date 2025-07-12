@@ -12,8 +12,8 @@
     "bridge:symlink-worker-backend":"pnpm install --prod --filter @sitewatch/worker-backend",
     "bridge:symlink-frontend":"pnpm install --prod --filter @sitewatch/frontend",
     "start:frontend": "cd apps/frontend &&  node server.js",
-    "start:backend": "cd apps/http-backend && npm run start",
-    "start:worker": "cd apps/worker-backend && npm run start",
+    "start:http-backend": "cd apps/http-backend/dist/src && node index.js",
+    "start:worker-backend": "cd apps/worker-backend/dist/src && node index.js",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },

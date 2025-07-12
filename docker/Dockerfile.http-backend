@@ -59,5 +59,5 @@
 
     ENV NODE_ENV=production
     EXPOSE 3001
-    CMD ["node", "apps/http-backend/dist/src/index.js"]
+    CMD ["pnpm","run","start:http-backend"]
     
