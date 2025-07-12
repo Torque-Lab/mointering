@@ -61,6 +61,7 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 - Distributed task processing
 - Scalable architecture
 - Modern and responsive UI (UI may be not great but backend and DevOps are built with complete security and scalablibility in mind)
+- Backend common and db directly bound to server like a external npm library in the form of packages in node_modules
 
 ## 🚀 Deployment
 ### CI/CD Pipeline
