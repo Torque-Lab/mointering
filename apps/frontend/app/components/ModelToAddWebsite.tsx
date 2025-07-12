@@ -10,7 +10,7 @@ interface ContentModelProps {
 export default function ContentModel({ open, onClose, className = '' }: ContentModelProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    serviceName: '',
     url: '',
     email: '',
   });
@@ -33,6 +33,11 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
         body: JSON.stringify(formData),
       });
       onClose();
+      setFormData({
+        serviceName: '',
+        url: '',
+        email: '',
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -47,7 +52,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={onClose}
+          onClick={onClose} 
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
           aria-label="Close"
         >
@@ -58,16 +63,16 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-1">
               Service Name
             </label>
             <InputBox
-              id="name"
-              value={formData.name}
+              id="serviceName"
+              value={formData.serviceName}
               onChange={handleInputChange}
               placeholder="Enter service name"
               required
-              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
@@ -82,7 +87,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               onChange={handleInputChange}
               placeholder="https://example.com/health"
               required
-              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full border  rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
@@ -96,8 +101,8 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               value={formData.email}
               required
               onChange={handleInputChange}
-              placeholder="your@email.com"
-              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              placeholder="john@example.com"
+              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
@@ -122,6 +127,7 @@ interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
+
 export function InputBox({ 
   placeholder, 
   onChange, 
@@ -135,7 +141,7 @@ export function InputBox({
       <input
         id={id}
         type={type}
-        className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${className}`}
+        className={`w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 ${className}`}
         placeholder={placeholder}
         onChange={onChange}
         {...props}
@@ -143,6 +149,7 @@ export function InputBox({
     </div>
   );
 }
+
 
 export function CrossIcon() {
   return (
