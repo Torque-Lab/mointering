@@ -21,12 +21,12 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 
 2. **In Production Mode**:
    - Kubernetes Ingress/Load Balancer routes `/api` of  requests of frontend url to Express backend
-   - and by this we are  at same origin for all requests and strict all security policies
+   - and by this we are  at same origin for all requests and we strict all security policies
 
 ### why this architecture?
 
 - **Best of Both Worlds**: Combines Next.js frontend capabilities with Express backend flexibility and to maintain cleaner routes and full flexibility to add integrations  
-- **i don't like nextjs as backend for api routes so i figure out some solutions to integrate nextjs with express like they are in same origin**  
+- **I don't like nextjs as backend for api routes so i figure out some solutions to integrate nextjs with express like they are in same origin ans this is integration safe and secure and scalable without any problems**  
 
 
 #### Authentication Flow
@@ -49,7 +49,7 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 | **Backend**     | Express.js       | Business logic and API endpoints         |
 | **Worker**      | Node.js          | Background job processing and monitoring |
 | **Message Queue**| RabbitMQ        | Task distribution and management         |
-| **central Cache**| Redis           | central cache for auth  and rate limiting       |
+| **Central Cache**| Redis           | Central cache store for auth  and rate limiting       |
 | **Database**    | PostgreSQL       | Primary data storage                     |
 | **ORM**         | Prisma           | Type-safe database operations            |
 | **Extensions**  | TimescaleDB      | Time-series data optimization            |
