@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '@repo/db';
+import crypto from 'crypto';
 
 declare global {
   namespace Express {
@@ -49,4 +50,15 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       res.status(401).json({ error: 'Invalid token' });
       return;
   }
+};
+
+export const csurfMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const sentToken = req.headers['x-csurf-token'] || req.body.csrfToken;
+  const storedToken = req.cookies['csurf_token'];
+  
+  if (sentToken !== storedToken) {
+    res.status(403).json({ error: 'Invalid CSRF token' });
+    return;
+  }
+  next();
 };

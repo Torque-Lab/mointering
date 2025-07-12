@@ -1,7 +1,7 @@
 
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware";
-import { signIn, signUp,refresh,logout,getSession, forgotPassword, resetPassword } from "../controllers/auth.controller";
+import { signIn, signUp,refresh,logout,getSession, forgotPassword, resetPassword,csurf } from "../controllers/auth.controller";
 import { genricRateLimiter } from "../middleware/rateLimit.genric";
 
 
@@ -14,6 +14,7 @@ router.post("/reset-password",genricRateLimiter(15,100),resetPassword);
 router.post("/refresh",genricRateLimiter(15,100), refresh)
 router.post("/logout",genricRateLimiter(15,100), logout)
 router.get("/session",genricRateLimiter(15,100),authenticate,getSession);
+router.get("/csurf",genricRateLimiter(15,100),csurf);
 
 
 export default router;

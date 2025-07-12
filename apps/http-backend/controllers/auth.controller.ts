@@ -10,7 +10,8 @@ import { GetKeyValue, IncreaseValueOfKey, isTokenValid, SetKeyValue, storeToken 
 import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { use } from "react";
+
+
 
 function setAuthCookie(res: Response, token: string, token_name: string,maxAge:number) {
     const isDev = process.env.NODE_ENV === "development";
@@ -108,6 +109,19 @@ export const signIn = async (req: Request, res: Response) => {
        res.status(500).json({ error: "Failed to sign in" });
     }
 };
+
+export const csurf = async (req: Request, res: Response) => {
+    try {
+        const token = crypto.randomBytes(16).toString('hex');
+       setAuthCookie(res, token, "csurf_token",60 * 60 * 1000);
+        res.status(200).json({ token });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to generate token" });
+    }
+};
+
+
 export const logout = async (req: Request, res: Response) => {
     try {
         res.clearCookie("access_token");
