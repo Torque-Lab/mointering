@@ -8,10 +8,11 @@ export default function ForgotPasswordPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const username = usernameRef.current?.value;
-        const response = await fetch('/api/auth/forgot-password', {
-            method: 'POST',
-            headers: {
+        try{
+            const username = usernameRef.current?.value;
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username })
@@ -19,7 +20,13 @@ export default function ForgotPasswordPage() {
         const data = await response.json();
         if (data.success) {
             setShowInstructions(true);  
+        }else{
+            alert("fail to intiate password reset")
         }
+    }catch(error){
+        console.error("Error intiating password reset:", error);
+        alert("fail to intiate password reset")
+    }
     };
 
     return (

@@ -166,14 +166,14 @@ export const forgotPassword = async (req: Request, res: Response) => {
         const parsedData = ForgotSchema.safeParse(req.body);
     
         if (!parsedData.success) {
-            res.status(400).json({ message: "Invalid data" });
+            res.status(400).json({ message: "Invalid data",success:false });
             return;
         }
     
         const email = parsedData.data.username;
         const forgotAttempts = await GetKeyValue(email);
         if(forgotAttempts?.value!=null && forgotAttempts.value>4){
-            res.status(403).json({ message: "Too many requests try after 24 hours" });
+            res.status(403).json({ message: "Too many requests try after 24 hours",success:false });
             return;
         }
         const user = await prismaClient.user.findFirst({
@@ -183,7 +183,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         });
     
         if (!user) {
-            res.status(403).json({ message: "Invalid Credentials" });
+            res.status(403).json({ message: "Invalid Credentials",success:false });
             return;
         }
     
@@ -207,11 +207,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
     
         res.status(200).json({
           message:
-            "if the user is registered,you will recived password reset link in 5 minutes",
+            "if the user is registered,you will received password reset link in 5 minutes",
+            success:true
         });
       } catch (error) {
          console.log(error);
-         res.status(500).json({ error: "Internal server error" });
+         res.status(500).json({ error: "Internal server error",success:false });
          return;
       }
 };
@@ -221,14 +222,14 @@ export const resetPassword = async (req: Request, res: Response) => {
         const parsedData = ResetSchema.safeParse(req.body);
     
         if (!parsedData.success) {
-            res.status(400).json({ message: "Invalid data" });
+            res.status(400).json({ message: "Invalid data",success:false });
             return;
         }
         const { token, newPassword } = parsedData.data;
         const resetPayload = jwt.verify(token, process.env.JWT_SECRET_ACCESS || 'z78hei7ritgfb67385vg7667') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
     
         if (!await isTokenValid(token)) {
-          res.status(403).json({ message: "Invalid Token" });
+          res.status(403).json({ message: "Invalid Token",success:false });
           return;
         }
     
@@ -239,7 +240,7 @@ export const resetPassword = async (req: Request, res: Response) => {
         });
     
         if (!user) {
-          res.status(403).json({ message: "Invalid Credentials" });
+          res.status(403).json({ message: "Invalid Credentials",success:false });
           return;
         }
     
@@ -249,10 +250,10 @@ export const resetPassword = async (req: Request, res: Response) => {
             data: { password: hashedPassword },
         });   
     
-         res.status(200).json({ message: "Password reset successfully" });
+         res.status(200).json({ message: "Password reset successfully",success:true });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error",success:false });
     }
 };  
 
@@ -273,9 +274,9 @@ const user = await prismaClient.user.findUnique({
 });
 
 if (!user) {
-    res.status(401).json({ error: "User not found" });
+    res.status(401).json({ error: "User not found",success:false });
     return;
 }
 
-res.status(200).json(user);
+res.status(200).json({user,success:true});
 };

@@ -55,12 +55,11 @@ export default function ResetPasswordPage() {
             });
             
             const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to reset password');
-            }
-            
-            alert('Your password has been reset successfully!');
+          if(data.success){
             router.push('/login');
+          }else{
+            setError(data.message);
+          }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         }
