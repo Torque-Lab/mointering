@@ -33,13 +33,13 @@ async function getWebsites(token:string) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch websites');
+      return [];
     }
    
 
     return await response.json() as TableRowData[]  ;
   } catch (error) {
-    console.error('Error fetching websites:', error);
-    return null;
+    console.log ('Error fetching websites:', error);
+    return [];
   }
 }

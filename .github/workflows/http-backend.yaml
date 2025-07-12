@@ -52,7 +52,7 @@ jobs:
             git diff --quiet || {
             git add apps/charts/http-backend/values.yaml
             git commit -m "Update http-backend image to ${{ github.sha }}"
-            git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main
+            git push https://${PAT}@github.com/Torque-Lab/mointering-gitops.git main --force
           }
 
           

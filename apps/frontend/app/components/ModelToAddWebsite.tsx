@@ -29,7 +29,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
     try {
       await fetch('/api/add-service', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+       credentials: 'include',
         body: JSON.stringify(formData),
       });
       onClose();
@@ -67,7 +67,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               onChange={handleInputChange}
               placeholder="Enter service name"
               required
-              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
@@ -82,29 +82,30 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               onChange={handleInputChange}
               placeholder="https://example.com/health"
               required
-              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Notification Email (Optional)
+              Notification Email 
             </label>
             <InputBox
               id="email"
               type="email"
               value={formData.email}
+              required
               onChange={handleInputChange}
               placeholder="your@email.com"
-              className="w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full border text-gray-700 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting} className="cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="cursor-pointer">
               {isSubmitting ? 'Adding...' : 'Add Service'}
             </Button>
           </div>

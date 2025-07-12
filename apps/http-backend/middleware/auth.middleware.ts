@@ -14,12 +14,13 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   try {
     const tokenFromHeader = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : undefined;
     const access_token = req.cookies.access_token || tokenFromHeader;
+    console.log(access_token,"access_token")
     if (!access_token) {
        res.status(401).json({ error: 'Invalid token' });
        return;
     }
  
-    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'z78h98yryvei7ritgfb67385vg7667') as { userId: string };
+    const decoded = jwt.verify(access_token, process.env.JWT_SECRET_ACCESS || 'z78h98yryvei7ritgfb67385vg7667') as { userId: string ,timeId: string ,tokenId: string ,issuedAt: number};
 
 
     if(!decoded.userId) {
