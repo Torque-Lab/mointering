@@ -7,3 +7,9 @@ export const ServiceSchema=z.object({
 })
 
 export type ServiceSchema= z.infer<typeof ServiceSchema>
+
+export const DeleteServiceSchema=z.object({
+    id:z.string()
+})
+
+export type DeleteServiceSchema= z.infer<typeof DeleteServiceSchema>

@@ -1,4 +1,4 @@
-import { ServiceSchema } from "../zodSchema/serviceSchema";
+import { DeleteServiceSchema, ServiceSchema } from "../zodSchema/serviceSchema";
 import {Request, Response} from "express"
 import {prismaClient} from "@repo/db"
 
@@ -25,4 +25,28 @@ export const createService=async(req:Request,res:Response)=>{
         console.log(error);
         res.status(500).json({ error: "Failed to add service, please try again after some time",success:false });
       }
+}
+
+export const deleteService=async(req:Request,res:Response)=>{
+  try {
+    const websiteId=DeleteServiceSchema.parse(req.body) 
+    const userId=req.userId!
+    await prismaClient.$transaction(async(tx)=>{
+      await tx.website.update({
+        where:{
+          id:websiteId.id,
+          user_id:userId
+        },
+        data:{
+          isDeleted:true
+        }
+      })
+    },{ 
+      isolationLevel: "Serializable"
+    })
+    res.status(200).json({ message: "Service deleted successfully",success:true});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to delete service, please try again after some time",success:false });
+  }
 }

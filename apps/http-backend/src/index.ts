@@ -3,7 +3,7 @@ console.log("Running from:", process.cwd());
 console.log("NODE_PATH:", process.env.NODE_PATH || 'not set');
 console.log("NODE_ENV:", process.env.NODE_ENV || 'not set');
 console.log("NODE_VERSION:", process.env.NODE_VERSION || 'not set');
-
+import cron from "node-cron";
 import express from "express";
 import { prismaClient } from "@repo/db";
 import { consumeFromQueueForAlerts, pushManyToQueue } from "@repo/backend-common";
@@ -55,10 +55,10 @@ async function taskScheduler() {
 
       if (currentCount !== previousCount) {
         const response = await prismaClient.website.findMany({
-          select: { id: true, url: true },
+          select: { id: true, url: true, isDeleted: true },
         });
 
-        cachedData = response; 
+        cachedData = response.filter((website) => !website.isDeleted); 
         previousCount = currentCount; 
         console.log(`Data count changed. New count: ${currentCount}`);
       } else {
@@ -119,9 +119,22 @@ async function startServer() {
   }
 }
 
+
+const dailyDeleteWebsite=cron.schedule('0 0 * * *', async () => {
+  try {
+    const result = await prismaClient.website.deleteMany({
+      where: { isDeleted: true },
+    });
+    console.log(`[Cron] Deleted ${result.count} websites.`);
+  } catch (err) {
+    console.error('[Cron Error]', err);
+  }
+}); 
+
 startServer();
 taskScheduler();
 start_alerts();
+dailyDeleteWebsite.start();
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Shutting down ......');
   try {

@@ -28,9 +28,10 @@ model Website {
   id        String        @id @default(uuid())
   url       String
   serviceName String
+  isDeleted Boolean @default(false)
   email String
   createdAt DateTime      @default(now())
-  ticks     WebsiteTick[]
+  ticks     WebsiteTick[] @relation("WebsiteTicks") 
   user_id   String
   user      User          @relation(fields: [user_id], references: [id])
 }
@@ -48,7 +49,7 @@ model WebsiteTick {
   region_id        String
   website_id       String
   region           Region        @relation(fields: [region_id], references: [id])
-  website          Website       @relation(fields: [website_id], references: [id])
+  website          Website       @relation("WebsiteTicks",fields: [website_id], references: [id] , onDelete: Cascade)
   createdAt        DateTime      @default(now()) @db.Timestamptz(6)
   
   @@id([id, createdAt])
