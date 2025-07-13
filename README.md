@@ -10,7 +10,7 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 
 #### Core Concept
 - **Unified Domain Architecture**: Frontend and backend operate under the same domain (e.g., `https://sitewatch.suvidhaportal.com` for frontend and `https://suvidhaportal.com/api` for backend)
-- **Zero CORS**: Seamless communication between frontend and backend without CORS complications and due this we can enable as much strict security policies as possible related to auth
+- **Zero CORS**: Seamless communication between frontend and backend without CORS complications, and still both are both are separate,that is next is only for frontendand express node as primary backend and due this we can enable as much strict security policies as possible related to auth
 - **Custom Authentication**: Built-in authentication system replacing NextAuth with enhanced security features
 
 #### How It Works
@@ -22,13 +22,6 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 2. **In Production Mode**:
    - Kubernetes Ingress/Load Balancer routes `/api` of  requests of frontend url to Express backend
    - and by this we are  at same origin for all requests and we strict all security policies
-
-### why this architecture?
-
-- **Best of Both Worlds**: Combines Next.js frontend capabilities with Express backend flexibility and to maintain cleaner routes and full flexibility to add integrations  
-- **I don't like nextjs as backend for api routes so i figure out some solutions to integrate nextjs with express like they are in same origin ans this is integration safe and secure and scalable without any problems**  
-
-
 #### Authentication Flow
 - **Cookie-based Authentication** with strict security policies:
   - Secure, HttpOnly cookies for access and refresh tokens
@@ -43,16 +36,16 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 
 ### 🏗️ System Components
 
-| Component       | Technology       | Purpose                                  |
-|-----------------|------------------|------------------------------------------|
-| **Frontend**    | Next.js          | User interface and API routing           |
-| **Backend**     | Express.js       | Business logic and API endpoints         |
-| **Worker**      | Node.js          | Background job processing and monitoring |
-| **Message Queue**| RabbitMQ        | Task distribution and management         |
-| **Central Cache**| Redis           | Central cache store for auth  and rate limiting       |
-| **Database**    | PostgreSQL       | Primary data storage                     |
-| **ORM**         | Prisma           | Type-safe database operations            |
-| **Extensions**  | TimescaleDB      | Time-series data optimization            |
+| Component        | Technology            | Purpose                                  |
+|----------------- |------------------     |------------------------------------------|
+| **Frontend**     | Next.js               | User interface only                      |
+| **Backend**      | Express.js            | Business logic and API endpoints         |
+| **Message Queue**| RabbitMQ              | Task distribution and management         |
+| **Worker**       | Node.js               | Background job processing and monitoring |
+| **Central Cache**| Redis                 | Central cache store for auth  and rate limiting       |
+| **Database**     | PostgreSQL+TimescaleDB|Primary data storage                      |
+| **ORM**          | Prisma                | Type-safe database operations            |
+| **Extensions**   | TimescaleDB           | Time-series data optimization            |
 
 ## 🚀 Features
 
@@ -67,7 +60,8 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 ### CI/CD Pipeline
 - **GitHub Actions**: Automated build and test workflows
 - **Docker**: Containerization of all services 
--**fact** : you wil find that in dockerfile , even in final image i have done pnpm bridge:symlink command, you will be wondering why i did this ? is i so  dump but wait workspace like pnpm,  work by doing symlink(wait symlink is way to connect file or folder,its like pointer to point to another file if needed by some other without making copy in both place) for node_modules, that is it  keep only one node_modules at root level and link it other apps who might need it(this is done by pnpm and  figure out by package.json of consumer app or service and link it only that libraries they claim), so when you even build this link in builder stage of docker and copy it to final image, this link will got broken to layering of docker image and final code will throw module not found error,and i not saying this in just guess , i done 100 of various attempt to prevent symlink form breakage but despite due filsystem and docker constraint it not work
+-**fact** : you wil find that in dockerfile , even in final image i have done pnpm bridge:symlink command, you will be wondering why i did this ? is i so  dump but wait workspace like pnpm,  work by doing symlink ((wait if you don't know symlink is way to connect file or folder,its like pointer to point to another file if needed by some other without making copy in both place)) for node_modules, that is it  keep only one node_modules at root level and link it other apps who might need it(this is done by pnpm and pnpm  figure out by it package.json of consumer app or service and link it only that libraries they claim), so when you even build this link in builder stage of docker and copy it to final image, this link will get broken to layering of docker image and final code will throw module not found error,and i not saying this in just guess , i done 100 of various attempt to prevent symlink form breakage but despite due filsystem and docker constraint it not work
+
 - **Helm Charts**: Kubernetes package management
 - **ArgoCD**: GitOps continuous delivery
 - **Kubernetes**: Container orchestration
@@ -88,7 +82,8 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 - **Database**: PostgreSQL + TimescaleDB
 - **ORM**: Prisma
 - **Task Processing**: Custom worker service
-
+## Note 
+- Backend common and db prisma client directly bound to consumer app like extenral library in node_module
 ## 📦 Prerequisites
 
 - Node.js (v18 or higher)
