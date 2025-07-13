@@ -4,8 +4,8 @@ import UptimeChart from "../../components/UptimeChart";
 import { NEXT_PUBLIC_URL } from "../../lib/config";
 
 interface PageProps {
-  params:Promise<string>
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+  params: { serviceId: string[] }
+  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 // interface UptimeSummary {
@@ -14,23 +14,29 @@ interface PageProps {
 //   last30d: string;
 // }
 
-async function fetchMetrics(serviceId: string, from: Date, to: Date): Promise<UptimeData[]> {
+async function fetchMetrics(serviceId: string, from: Date, to: Date): Promise<UptimeData[] | null> {
   const fromISO = from.toISOString();
   const toISO = to.toISOString();
   
-  const res = await fetch(
-    `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`,
-    { 
-      credentials: 'include',
-      next: { revalidate: 300 } // Revalidate every 5 minutes
+  try {
+    const res = await fetch(
+      `${NEXT_PUBLIC_URL}/api/metrics/${serviceId}?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`,
+      { 
+        credentials: 'include',
+        next: { revalidate: 300 } // Revalidate every 5 minutes
     }
   );
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch metrics');
+    if (!res.ok) {
+      console.error('Failed to fetch metrics:', res.status, res.statusText);
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching metrics:', error);
+    return null;
   }
-await new Promise(resolve => setTimeout(resolve, 2000));
-  return res.json();
 }
 
 // async function fetchUptimeSummary(serviceId: string): Promise<UptimeSummary> {
@@ -55,7 +61,7 @@ const getDateRange = (days: number) => ({
 });
 
 export default async function ServicePage({ params, searchParams }: PageProps) {
-  const serviceId = await params || '';
+  const serviceId = params?.serviceId?.[0] || '';
     
   if (!serviceId) {
     throw new Error('Service ID is required');
@@ -65,19 +71,51 @@ export default async function ServicePage({ params, searchParams }: PageProps) {
   const days = searchParamsObj?.days ? Number(searchParamsObj.days) : 7;
   const dateRange = getDateRange(days);
   
-  const [metrics] = await Promise.all([
-    fetchMetrics(serviceId, dateRange.from, dateRange.to),
-  ]);
+  const metrics = await fetchMetrics(serviceId, dateRange.from, dateRange.to);
   
-  const chartData = metrics.map(item => ({
-    status: item.status,
-    timestamp: item.timestamp,
-    duration: item.duration
+  // Handle case when server is down or data is not available
+  if (metrics === null) {
+    return (
+      <div className="min-h-screen bg-gray-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-white mb-6">Service: {serviceId}</h1>
+          <div className="bg-red-900/20 border border-red-500 text-red-200 p-4 rounded-lg">
+            <h2 className="text-xl font-semibold mb-2">Service Unavailable</h2>
+            <p>We're currently unable to fetch metrics data. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Type assertion for the metrics data
+  type MetricsResponse = Array<{
+    date: string;
+    uptime: string | number;
+    avgResponseTime: number;
+    upCount: number;
+    downCount: number;
+    totalChecks: number;
+  }>;
+
+  const metricsDataTyped = metrics as unknown as MetricsResponse;
+
+  // Transform data for the chart
+  const chartData = metricsDataTyped.map(day => ({
+    date: day.date,
+    uptime: typeof day.uptime === 'string' 
+      ? parseFloat(day.uptime.replace('%', '')) 
+      : day.uptime,
+    avgResponseTime: day.avgResponseTime,
+    upCount: day.upCount,
+    downCount: day.downCount,
+    totalChecks: day.totalChecks
   }));
   
-  const filteredData = chartData.filter(item => {
-    const itemDate = new Date(item.timestamp);
-    return itemDate >= dateRange.from && itemDate <= dateRange.to;
+  // Filter data by date range
+  const filteredData = chartData.filter(day => {
+    const dayDate = new Date(day.date);
+    return dayDate >= dateRange.from && dayDate <= dateRange.to;
   });
 
   return (

@@ -10,7 +10,8 @@ import { GetKeyValue, IncreaseValueOfKey, isTokenValid, SetKeyValue, storeToken 
 import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import dotenv from "dotenv";
+dotenv.config();
 
 
 function setAuthCookie(res: Response, token: string, token_name: string,maxAge:number) {
@@ -36,7 +37,6 @@ function generateTimeId(): string{
 
 export const signUp = async (req: Request, res: Response) => {
     try {
-        console.log(req.body)
        const parsedData = SignUpSchema.safeParse(req.body);
        if(!parsedData.success) {
          res.status(400).json({ error: "Invalid data" });

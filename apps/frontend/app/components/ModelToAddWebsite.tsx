@@ -9,6 +9,7 @@ interface ContentModelProps {
 
 export default function ContentModel({ open, onClose, className = '' }: ContentModelProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{text: string; isError: boolean} | null>(null);
   const [formData, setFormData] = useState({
     serviceName: '',
     url: '',
@@ -25,21 +26,44 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setMessage(null);
 
     try {
-      await fetch('/api/add-service', {
+      const response = await fetch('/api/add-service', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         method: 'POST',
-       credentials: 'include',
         body: JSON.stringify(formData),
       });
-      onClose();
-      setFormData({
-        serviceName: '',
-        url: '',
-        email: '',
-      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage({ text: 'Service successfully added!', isError: false });
+      
+        setFormData({
+          serviceName: '',
+          url: '',
+          email: '',
+        });
+        setTimeout(() => {
+          onClose();
+          setMessage(null);
+        }, 2000);
+      } else {
+        setMessage({ 
+          text: data.error || 'Failed to add service. Please try again.', 
+          isError: true 
+        });
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
+      setMessage({ 
+        text: 'An error occurred. Please try again later.', 
+        isError: true 
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -60,6 +84,12 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
         </button>
 
         <h3 className="text-xl font-semibold text-gray-900 mb-6">Add New Service</h3>
+
+        {message && (
+          <div className={`mb-4 p-3 rounded-md ${message.isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+            {message.text}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -106,11 +136,22 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting} className="cursor-pointer">
+          <div className="flex justify-end space-x-3 pt-2">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              onClick={onClose} 
+              disabled={isSubmitting} 
+              className="px-4 py-2 rounded-md text-sm font-medium"
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting} className="cursor-pointer">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting}
+              className="px-4 py-2 rounded-md text-sm font-medium"
+            >
               {isSubmitting ? 'Adding...' : 'Add Service'}
             </Button>
           </div>

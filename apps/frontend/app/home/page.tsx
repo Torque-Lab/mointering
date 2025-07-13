@@ -36,6 +36,7 @@ async function getWebsites(token:string) {
       return [];
     }
    
+    console.log(response)
 
     return await response.json() as TableRowData[]  ;
   } catch (error) {

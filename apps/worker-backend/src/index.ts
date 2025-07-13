@@ -1,6 +1,9 @@
 import { consumeFromQueue, pushToQueue } from "@repo/backend-common"
 import { prismaClient } from "@repo/db"
 import axios from "axios"
+import dotenv from "dotenv"
+dotenv.config();
+console.log(process.env.DATABASE_URL,"db")
 const BATCH_SIZE = 100; 
 const BATCH_TIMEOUT_MS = 5000;
 const regionName = process.env.REGION_NAME || "India";

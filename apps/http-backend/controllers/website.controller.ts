@@ -25,7 +25,7 @@ export const getWebsites = async (req: Request, res: Response) => {
 
       const result = await prismaClient.$queryRaw<{up: number, total: number}[]>`
         SELECT 
-          COUNT(CASE WHEN status = ${WebsiteStatus.Up} THEN 1 END)::int as up,
+          COUNT(CASE WHEN status = ${WebsiteStatus.Up}::"WebsiteStatus" THEN 1 END)::int as up,
           COUNT(*)::int as total
         FROM "website_tick"
         WHERE website_id = ${websiteId}
@@ -42,7 +42,7 @@ export const getWebsites = async (req: Request, res: Response) => {
       ticks: WebsiteTick[];
       createdAt: Date;
     }   
-
+console.log(websites,"websites")
     const formattedWebsites = await Promise.all(
       websites.map(async (website:Website) => {
         const latestTick = website.ticks[0]; 
@@ -58,6 +58,7 @@ export const getWebsites = async (req: Request, res: Response) => {
       })
     );
     
+    console.log(formattedWebsites,"formattedWebsites")
 
     if (formattedWebsites.length === 0) {
       return res.status(200).json(getDummyData());

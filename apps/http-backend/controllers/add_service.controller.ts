@@ -7,7 +7,7 @@ export const createService=async(req:Request,res:Response)=>{
       try {
         const parsedData = ServiceSchema.safeParse(req.body);
            if(!parsedData.success) {
-             res.status(400).json({ error: "Invalid data" });
+             res.status(400).json({ error: "Invalid data",success:false });
              return;
            }
            const {serviceName,url ,email}=parsedData.data
@@ -20,9 +20,9 @@ export const createService=async(req:Request,res:Response)=>{
                 user_id
             }
            })
-           res.status(201).json({ message: "Website created successfully",serviceId:website.id });   
+           res.status(201).json({ message: "Service added successfully",serviceId:website.id ,success:true});   
       } catch (error) {
         console.log(error);
-        res.status(500).json({ error: "Failed to create website" });
+        res.status(500).json({ error: "Failed to add service, please try again after some time",success:false });
       }
 }
