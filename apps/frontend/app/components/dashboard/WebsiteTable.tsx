@@ -23,7 +23,7 @@ export default function WebsiteTable({ initialData }: { initialData: TableRowDat
         <Button 
           variant="primary"
           onClick={handleAddService}
-          className="whitespace-nowrap"
+          className="whitespace-nowrap cursor-pointer"
         >
           <PlusIcon />
           Add New Service
