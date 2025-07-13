@@ -4,10 +4,9 @@ import UptimeChart from "../../components/UptimeChart";
 import { NEXT_PUBLIC_URL } from "../../lib/config";
 
 interface PageProps {
-  params: { serviceId: string[] }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  params: Promise<{ serviceId: string[] }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
-
 // interface UptimeSummary {
 //   last24h: string;
 //   last7d: string;
@@ -60,20 +59,21 @@ const getDateRange = (days: number) => ({
   to: new Date(),
 });
 
-export default async function ServicePage({ params, searchParams }: PageProps) {
-  const serviceId = params?.serviceId?.[0] || '';
-    
+export default async function ServicePage(props: PageProps) {
+  const resolvedParams = await props.params;
+  const resolvedSearchParams = props.searchParams ? await props.searchParams : undefined;
+
+  const serviceId = resolvedParams?.serviceId?.[0] || '';
   if (!serviceId) {
     throw new Error('Service ID is required');
   }
-  
-  const searchParamsObj = await searchParams;
-  const days = searchParamsObj?.days ? Number(searchParamsObj.days) : 7;
+
+  const daysParam = resolvedSearchParams?.days;
+  const days = typeof daysParam === 'string' ? Number(daysParam) : 7;
+
   const dateRange = getDateRange(days);
-  
   const metrics = await fetchMetrics(serviceId, dateRange.from, dateRange.to);
-  
-  // Handle case when server is down or data is not available
+
   if (metrics === null) {
     return (
       <div className="min-h-screen bg-gray-900 p-6">
@@ -81,7 +81,7 @@ export default async function ServicePage({ params, searchParams }: PageProps) {
           <h1 className="text-3xl font-bold text-white mb-6">Service: {serviceId}</h1>
           <div className="bg-red-900/20 border border-red-500 text-red-200 p-4 rounded-lg">
             <h2 className="text-xl font-semibold mb-2">Service Unavailable</h2>
-            <p>We're currently unable to fetch metrics data. Please try again later.</p>
+            <p>We&apos;re currently unable to fetch metrics data. Please try again later.</p>
           </div>
         </div>
       </div>
