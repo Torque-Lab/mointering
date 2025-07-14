@@ -1,22 +1,16 @@
-import { createClient, RedisClientType } from 'redis';
-
+import { createClient, RedisClientType } from 'redis';;
 export class RedisService {
   private static instance: RedisService;
   private client: RedisClientType;
-  private isConnected: boolean = false;
 
   private constructor() {
-    const redisUrl =
-      process.env.REDIS_URL && process.env.REDIS_URL.trim().length > 0
-        ? process.env.REDIS_URL.trim()
-        : 'redis://localhost:6379';
-
+    const redisUrl = process.env.REDIS_URL?.trim() || 'redis://localhost:6379';
     this.client = createClient({
       url: redisUrl,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 5) {
-            console.error('Max Redis reconnection attempts reached');
+            console.error(' Max Redis reconnection attempts reached');
             return new Error('Max reconnection attempts reached');
           }
           return Math.min(retries * 200, 1000);
@@ -25,10 +19,6 @@ export class RedisService {
     });
 
     this.setupEventListeners();
-
-    this.connect().catch((err) => {
-      console.error('Redis connection failed on startup:', err);
-    });
   }
 
   public static getInstance(): RedisService {
@@ -41,12 +31,10 @@ export class RedisService {
   private setupEventListeners(): void {
     this.client.on('connect', () => {
       console.log('Redis client connected');
-      this.isConnected = true;
     });
 
     this.client.on('error', (err) => {
-      console.error('Redis client error:', err);
-      this.isConnected = false;
+      console.error(' Redis client error:', err);
     });
 
     this.client.on('reconnecting', () => {
@@ -55,7 +43,7 @@ export class RedisService {
   }
 
   public async connect(): Promise<void> {
-    if (this.isConnected) return;
+    if (this.client.isOpen) return;
 
     try {
       await this.client.connect();
@@ -66,24 +54,22 @@ export class RedisService {
   }
 
   public async disconnect(): Promise<void> {
-    if (!this.isConnected) return;
+    if (!this.client.isOpen) return;
 
     try {
       await this.client.quit();
-      this.isConnected = false;
+      console.log('Redis client disconnected');
     } catch (error) {
       console.error('Error disconnecting from Redis:', error);
     }
   }
 
-  public getClient(): RedisClientType {
-    if (!this.isConnected) {
-      console.error('Redis client is not connected');
-    
+  public async getClient():Promise<RedisClientType>{
+    if(!this.client.isOpen){
+      await this.connect();
     }
     return this.client;
   }
 }
 
-// Export singleton instance
 export const redisService = RedisService.getInstance();

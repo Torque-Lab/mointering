@@ -3,6 +3,11 @@ console.log("Running from:", process.cwd());
 console.log("NODE_PATH:", process.env.NODE_PATH || 'not set');
 console.log("NODE_ENV:", process.env.NODE_ENV || 'not set');
 console.log("NODE_VERSION:", process.env.NODE_VERSION || 'not set');
+//Always load env from top first
+import dotenv from "dotenv";
+dotenv.config();
+
+
 import cron from "node-cron";
 import express from "express";
 import { prismaClient } from "@repo/db";
@@ -15,17 +20,18 @@ import websiteRouter from "../routes/website.routes";
 import cookieParser from "cookie-parser";
 import { sendEmail } from "../utils/sendOtp";
 import { Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
+import authGoogleRouter from "../routes/auth.google.route";
+import authGithubRouter from "../routes/auth.github.route";
+import passport from "passport";
 const app = express();
 app.use(express.json());
 const isDev=process.env.NODE_ENV==='developement';
 if(!isDev){
   app.set("trust proxy", 1);
 }
-
+app.use(passport.initialize());
 app.use(cookieParser());
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authRouter,authGoogleRouter,authGithubRouter);
 app.use("/api", addServiceRouter);
 app.use("/api", metricRouter);
 app.use("/api", websiteRouter);
@@ -108,7 +114,7 @@ async function sendEmailAlert(url: string, id: string) {
 async function startServer() {
   try {
     await redisService.connect();
-    console.log('Connected to Redis');
+    console.log('Connected to Redis from server boot...');
     const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
       console.log(`Server started on port ${PORT}`);

@@ -1,9 +1,9 @@
 import { redisService } from '../services/redis.service';
 
 
-const getRedisClient = () => {
+export const getRedisClient =async() => {
     try {
-        return redisService.getClient();
+        return await redisService.getClient();
     } catch (error) {
         console.error('Failed to get Redis client:', error);
         throw new Error('Redis client is not available');
@@ -17,7 +17,7 @@ export function generateOTP(length: number = 6): string {
 export async function storeOTP(email: string, otp: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `otp:${email}`;
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const result = await client.set(key, JSON.stringify({ otp }), {
             expiration: { type: 'EX', value: ttlInMinutes * 60 },
             NX: true
@@ -32,7 +32,7 @@ export async function storeOTP(email: string, otp: string, ttlInMinutes = 15): P
 export async function getOTP(email: string): Promise<{otp:string} | null> {
     try {
         const key = `otp:${email}`;
-        const client = getRedisClient();
+        const client = await getRedisClient();
         const data = await client.get(key);
         return data ? JSON.parse(data) : null;
     } catch (error) {
@@ -60,7 +60,7 @@ export async function isOTPValid(email: string, otp: string): Promise<boolean> {
 export async function storeToken(token: string, ttlInMinutes = 15): Promise<boolean> {
     try {
         const key = `token:${token}`;
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const result = await client.set(key, JSON.stringify({ token }), {
             expiration: { type: 'EX', value: ttlInMinutes * 60 },
         });
@@ -74,7 +74,7 @@ export async function storeToken(token: string, ttlInMinutes = 15): Promise<bool
 export async function getToken(token: string): Promise<{token:string} | null> {
     try {
         const key = `token:${token}`;
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const data = await client.get(key);
         return data ? JSON.parse(data) : null;
     } catch (error) {
@@ -99,7 +99,7 @@ export async function isTokenValid(token: string): Promise<boolean> {
 
 export async function SetKeyValue(key:string,value:number,ttlInDay = 7):Promise<boolean>{
     try {
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const result = await client.set(key, JSON.stringify(value),{
             expiration: { type: 'EX', value: ttlInDay*24 * 60*60 },
         });
@@ -112,7 +112,7 @@ export async function SetKeyValue(key:string,value:number,ttlInDay = 7):Promise<
 
 export async function GetKeyValue(key:string):Promise<{value:number} | null>{
     try {
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const data = await client.get(key);
         return data ? JSON.parse(data) : null;
     } catch (error) {
@@ -123,7 +123,7 @@ export async function GetKeyValue(key:string):Promise<{value:number} | null>{
 
 export async function DeleteKey(key:string):Promise<boolean>{
     try {
-        const client = redisService.getClient();
+        const client = await getRedisClient();
         const result = await client.del(key);
         return result === 1;
     } catch (error) {
@@ -134,7 +134,7 @@ export async function DeleteKey(key:string):Promise<boolean>{
 
 export async function IncreaseValueOfKey(key:string,ttlInDay = 7):Promise<{value:number} | null>{
     try {
-        const client = redisService.getClient();
+        const client = await getRedisClient();
             const exist = await client.exists(key);
         if(exist){
             const result = await client.incr(key);

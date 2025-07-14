@@ -1,12 +1,12 @@
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
-import { redisService } from "../services/redis.service";
+import { getRedisClient } from "../utils/otp";
 
-const client = redisService.getClient();
+
 export function genricRateLimiter(windowInMinutes:number,max:number){
     return rateLimit({
         store: new RedisStore({
-            sendCommand: async (...args: string[])=>client.sendCommand(args)
+            sendCommand: async (...args: string[])=>  (await getRedisClient()).sendCommand(args)
         }),
           windowMs: windowInMinutes * 60 * 1000,
           max: max,

@@ -142,7 +142,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               variant="secondary" 
               onClick={onClose} 
               disabled={isSubmitting} 
-              className="px-4 py-2 rounded-md text-sm font-medium"
+              className="px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
             >
               Cancel
             </Button>
@@ -150,7 +150,7 @@ export default function ContentModel({ open, onClose, className = '' }: ContentM
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              className="px-4 py-2 rounded-md text-sm font-medium"
+              className="px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
             >
               {isSubmitting ? 'Adding...' : 'Add Service'}
             </Button>

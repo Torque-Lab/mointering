@@ -88,7 +88,7 @@ export default async function ServicePage(props: PageProps) {
     );
   }
   
-  // Type assertion for the metrics data
+
   type MetricsResponse = Array<{
     date: string;
     uptime: string | number;
@@ -100,7 +100,6 @@ export default async function ServicePage(props: PageProps) {
 
   const metricsDataTyped = metrics as unknown as MetricsResponse;
 
-  // Transform data for the chart
   const chartData = metricsDataTyped.map(day => ({
     date: day.date,
     uptime: typeof day.uptime === 'string' 
