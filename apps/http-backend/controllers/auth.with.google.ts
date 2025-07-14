@@ -3,10 +3,13 @@ import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
 import { prismaClient } from '@repo/db';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { Request, Response, RequestHandler } from 'express';
+import { Request, Response, RequestHandler, NextFunction } from 'express';
 import { setAuthCookie } from './auth.controller';
 import { generateTimeId } from './auth.controller';
 import bcrypt from 'bcrypt';
+
+
+
 passport.use(new GoogleStrategy(
   { 
     clientID: process.env.GOOGLE_CLIENT_ID!,
@@ -52,19 +55,27 @@ interface googleUser{
     username: string;
     password: string;
 }
-export const startGoogleAuth = () => {
+export const startGoogleAuth = (): RequestHandler => {
     return passport.authenticate('google', { scope: ['profile', 'email'] })
 }
 
 
-
-export const googleCallbackMiddleware:RequestHandler = passport.authenticate('google', { session: false });
-
+export const googleCallbackMiddleware: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('google', { session: false }, (err: Error, user: googleUser) => {
+    if (err || !user) {
+      console.error('Google OAuth error:', err);
+       res.redirect(`${process.env.NEXT_PUBLIC_URL}/login?error=google`);
+       return;
+    }
+    req.user = user;
+    next();
+  })(req, res, next);
+};
 export const handleGoogleCallback = async(req: Request, res: Response): Promise<void> => {
   const user = req.user as googleUser;
 
   if (!user) {
-    res.status(401).json({ error: 'No user returned' });
+    res.redirect(`${process.env.NEXT_PUBLIC_URL}/login?error=google`);
     return;
   }
 
