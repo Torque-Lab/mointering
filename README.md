@@ -10,7 +10,7 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 
 #### Core Concept
 - **Unified Domain Architecture**: Frontend and backend operate under the same domain (e.g., `https://sitewatch.suvidhaportal.com` for frontend and `https://suvidhaportal.com/api` for backend)
-- **Zero CORS**: Seamless communication between frontend and backend without CORS complications, and still both are both are separate,that is next is only for frontendand express node as primary backend and due this we can enable as much strict security policies as possible related to auth
+- **Zero CORS**: Seamless communication between frontend and backend without CORS complications, and still both are both are separate,that is nextjs is only for frontendand express node as primary backend and due to this we can enable as much strict security policies as possible related to auth
 - **Custom Authentication**: Built-in authentication system replacing NextAuth with enhanced security features
 
 #### How It Works
@@ -60,7 +60,7 @@ The project is built as a monorepo using Turborepo, consisting of multiple servi
 ### CI/CD Pipeline
 - **GitHub Actions**: Automated build and test workflows
 - **Docker**: Containerization of all services 
--**fact** : you wil find that in dockerfile , even in final image i have done pnpm bridge:symlink command, you will be wondering why i did this ? is i so  dump but wait workspace like pnpm,  work by doing symlink ((wait if you don't know symlink is way to connect file or folder,its like pointer to point to another file if needed by some other without making copy in both place)) for node_modules, that is it  keep only one node_modules at root level and link it other apps who might need it(this is done by pnpm and pnpm  figure out by it package.json of consumer app or service and link it only that libraries they claim), so when you even build this link in builder stage of docker and copy it to final image, this link will get broken to layering of docker image and final code will throw module not found error,and i not saying this in just guess , i done 100 of various attempt to prevent symlink form breakage but despite due filsystem and docker constraint it not work
+-**fact** : You wil find that in dockerfile , even in final image i have done pnpm bridge:symlink command, you will be wondering why i did this ?  but wait workspace like pnpm,  work by doing symlink ((wait if you don't know symlink,it  is way to connect file or folder,its like pointer to point to another file if needed by some other without making copy in both place)) for node_modules, that is it  keep only one node_modules at root level and link it other apps who might need it(this is done by pnpm and pnpm  figure out it by  package.json of consumer app or service and link it only that libraries they claim), so when you even build this link in builder stage of docker and copy it to final image, this link will get broken due to layering of docker image and final code will throw module not found error,and i not saying this in just guess , i done 100 of various attempt to prevent symlink form breakage but despite due to filsystem and docker constraint it not work
 
 - **Helm Charts**: Kubernetes package management
 - **ArgoCD**: GitOps continuous delivery
