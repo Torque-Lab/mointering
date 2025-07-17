@@ -14,7 +14,7 @@ passport.use(new GoogleStrategy(
   { 
     clientID: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    callbackURL: process.env.NEXT_PUBLIC_URL + '/api/auth/google/callback',
+    callbackURL: new URL('/api/auth/google/callback', process.env.NEXT_PUBLIC_URL).toString()
   },
   async (_accessToken,_refreshToken, profile: Profile, done) => {
     try {
@@ -101,6 +101,6 @@ export const handleGoogleCallback = async(req: Request, res: Response): Promise<
   setAuthCookie(res, access_token, "access_token", 60 * 60 * 1000);
   setAuthCookie(res, refresh_token, "refresh_token", 60 * 60 * 1000 * 24 * 7);
 
-  res.redirect(`${process.env.NEXT_PUBLIC_URL }/home` || 'http://localhost:3000/home');
+  res.redirect(`${process.env.NEXT_PUBLIC_URL }/callback` || 'http://localhost:3000/callback');
   return;
 };

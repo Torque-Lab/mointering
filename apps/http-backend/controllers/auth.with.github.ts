@@ -11,7 +11,7 @@ passport.use(new GitHubStrategy(
   {
     clientID: process.env.GITHUB_CLIENT_ID!,
     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    callbackURL: process.env.NEXT_PUBLIC_URL + '/api/auth/github/callback',
+    callbackURL: new URL('/api/auth/github/callback', process.env.NEXT_PUBLIC_URL).toString()
   },
   async (_access_token, _refresh_token, profile: Profile, done) => {
     try {
@@ -104,5 +104,5 @@ export const handleGithubCallback = async (req: Request, res: Response): Promise
   setAuthCookie(res, access_token, 'access_token', 60 * 60 * 1000);
   setAuthCookie(res, refresh_token, 'refresh_token', 60 * 60 * 1000 * 24 * 7);
 
-  res.redirect(`${process.env.NEXT_PUBLIC_URL}/home`);
+  res.redirect(`${process.env.NEXT_PUBLIC_URL}/callback`);
 };
