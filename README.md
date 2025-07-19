@@ -141,10 +141,7 @@ RABBITMQ_URL="amqp://localhost:5672"
 API_PORT=3001
 API_HOST=localhost
 
-# Frontend
-NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 `
 Project Link: [https://github.com/Torque-Lab/mointering]
 
-### some fun facts about this project
