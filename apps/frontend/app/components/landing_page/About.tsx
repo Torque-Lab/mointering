@@ -15,19 +15,19 @@ export default function AboutPage() {
 
   const team = [
     {
-      name: 'Alex Johnson',
+      name: 'Alex',
       role: 'CEO & Founder',
       image: '/team/alex.jpg',
       description: '10+ years in cloud infrastructure and monitoring solutions.',
     },
     {
-      name: 'Sarah Chen',
+      name: 'Mac Chen',
       role: 'CTO',
       image: '/team/sarah.jpg',
       description: 'Former lead architect at major cloud platform.',
     },
     {
-      name: 'Michael Rodriguez',
+      name: 'Michael ',
       role: 'Head of Product',
       image: '/team/michael.jpg',
       description: 'Product specialist with focus on developer experience.',
@@ -91,7 +91,7 @@ export default function AboutPage() {
               Our mission is to provide powerful, yet simple tools that help you stay ahead of issues before they impact your users.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-300">
-              Founded in 2023, &nbsp; we ve been helping businesses of all sizes maintain their digital presence with confidence.
+              Founded in 2025, &nbsp; we ve been helping businesses of all sizes maintain their digital presence with confidence.
             </p>
           </motion.div>
           
