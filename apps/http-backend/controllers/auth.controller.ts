@@ -24,6 +24,16 @@ export function setAuthCookie(res: Response, token: string, token_name: string,m
       path: "/"
     });
   }
+  export function clearAuthCookie(res: Response, token_name: string) {
+    const isDev = process.env.NODE_ENV === "development";
+    res.clearCookie(token_name, {
+      httpOnly: true,
+      secure: !isDev,
+      sameSite: "strict",
+      path: "/",
+    });
+  }
+  
   
 export function generateTimeId(): string{
     let timeId="";
@@ -124,8 +134,9 @@ export const csurf = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
     try {
-        res.clearCookie("access_token");
-        res.clearCookie("refresh_token");
+      clearAuthCookie(res, "access_token");
+      clearAuthCookie(res, "refresh_token");
+      
         res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
         console.log(error);
