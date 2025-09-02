@@ -11,6 +11,7 @@ import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 
@@ -139,8 +140,9 @@ export const logout = async (req: Request, res: Response) => {
       
         res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
+        
         console.log(error);
-        res.status(500).json({ error: "Failed to sign out" });
+        res.status(401).json({ error });
     }
 };
 
