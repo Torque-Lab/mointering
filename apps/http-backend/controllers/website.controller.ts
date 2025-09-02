@@ -42,7 +42,6 @@ export const getWebsites = async (req: Request, res: Response) => {
       ticks: WebsiteTick[];
       createdAt: Date;
     }   
-console.log(websites,"websites")
     const formattedWebsites = await Promise.all(
       websites.map(async (website:Website) => {
         const latestTick = website.ticks[0]; 
@@ -58,7 +57,6 @@ console.log(websites,"websites")
       })
     );
     
-    console.log(formattedWebsites,"formattedWebsites")
 
     if (formattedWebsites.length === 0) {
       return res.status(200).json(getDummyData());

@@ -81,8 +81,9 @@ export function Sidebar() {
                   text="Logout" 
                   icon={<LogOutIcons />} 
                   className="text-[#e65535] hover:text-[#29292b] focus:outline-none cursor-pointer"
-                  onClick={() => {
-                    fetch('/api/auth/logout',
+                  onClick={async () => {
+                    try{
+                    await fetch('/api/auth/logout',
                     
                     {
                     method: 'POST',
@@ -92,8 +93,10 @@ export function Sidebar() {
                   }).then(() => {
                     router.push('/login');
                   })
-                }}
-                />
+                }catch(error){
+                  console.log("Logout failed");
+                      }}}
+                />    
               )
             }
           </div>

@@ -11,7 +11,6 @@ import { sendPasswordResetEmail } from "../utils/sendOtp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 
@@ -135,15 +134,11 @@ export const csurf = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
     try {
-        console.log("Clearing access_token cookie");
-        clearAuthCookie(res, "access_token");
-        console.log("Clearing refresh_token cookie");
-        clearAuthCookie(res, "refresh_token");
-        console.log("Cookies cleared, sending response");
+      clearAuthCookie(res, "access_token");
+      clearAuthCookie(res, "refresh_token");
         res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
-        console.error("Logout error:", error);
-        res.status(401).json({ error: "Logout failed" });
+        res.status(500).json({ error: "Failed to sign out" });
     }
 };
 
