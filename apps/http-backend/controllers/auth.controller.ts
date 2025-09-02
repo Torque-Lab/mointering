@@ -135,14 +135,15 @@ export const csurf = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
     try {
-      clearAuthCookie(res, "access_token");
-      clearAuthCookie(res, "refresh_token");
-      
+        console.log("Clearing access_token cookie");
+        clearAuthCookie(res, "access_token");
+        console.log("Clearing refresh_token cookie");
+        clearAuthCookie(res, "refresh_token");
+        console.log("Cookies cleared, sending response");
         res.status(200).json({ message: "User signed out successfully" });
     } catch (error) {
-        
-        console.log(error);
-        res.status(401).json({ error });
+        console.error("Logout error:", error);
+        res.status(401).json({ error: "Logout failed" });
     }
 };
 
