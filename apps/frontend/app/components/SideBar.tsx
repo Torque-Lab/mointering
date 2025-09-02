@@ -82,14 +82,13 @@ export function Sidebar() {
                   icon={<LogOutIcons />} 
                   className="text-[#e65535] hover:text-[#29292b] focus:outline-none cursor-pointer"
                   onClick={() => {
-                    fetch(`${process.env.NEXT_PUBLIC_URL}/api/auth/logout`,
+                    fetch('/api/auth/logout',
                     
                     {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                     },
-                    credentials: 'include'
                   }).then(() => {
                     router.push('/login');
                   })
